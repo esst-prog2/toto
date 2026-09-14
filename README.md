@@ -35,7 +35,7 @@ in between    compare the teams using historical match data and estimate whether
 
 ### 5. What could stop this
 
-The main challenge could be finding enough historical match data in a consistent format, especially for older seasons and different competitions. Another challenge will be choosing and developing a prediction method that works well with the available data.
+The main challenge could be finding enough historical match data in a consistent format, especially for older seasons and different competitions. Another challenge will be choosing and developing a prediction method that works well with the available data. The project will use publicly available football match data that can be shown in class; if some years or competitions are not available, the first version will use a smaller dataset.
 
 
 
