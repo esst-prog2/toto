@@ -1,0 +1,16 @@
+position,home_team,away_team
+1,Team A,Team B
+2,Team C,Team A
+3,Team A,Team D
+4,Team E,Team A
+5,Team A,Team F
+6,Team B,Team C
+7,Team B,Team D
+8,Team B,Team E
+9,Team F,Team B
+10,Team C,Team D
+11,Team E,Team C
+12,Team F,Team C
+13,Team D,Team E
+14,Team D,Team F
+
