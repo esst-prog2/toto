@@ -1,0 +1,209 @@
+{
+  "sources": [
+    {
+      "filename": "E0_2223.csv",
+      "url": "https://www.football-data.co.uk/mmz4281/2223/E0.csv",
+      "season": "2022-23",
+      "division": "E0",
+      "dataset_role": "fit",
+      "rows": 380,
+      "sha256": "8442792d3b614c94ea3cf381bd2736805889cc1713169035368fff19c3d02380"
+    },
+    {
+      "filename": "E1_2223.csv",
+      "url": "https://www.football-data.co.uk/mmz4281/2223/E1.csv",
+      "season": "2022-23",
+      "division": "E1",
+      "dataset_role": "fit",
+      "rows": 552,
+      "sha256": "cd38ab0586ea8cb4d573c363ff70749117f116da5b2741e5b0ea37da05860b1b"
+    },
+    {
+      "filename": "E0_2324.csv",
+      "url": "https://www.football-data.co.uk/mmz4281/2324/E0.csv",
+      "season": "2023-24",
+      "division": "E0",
+      "dataset_role": "evaluation",
+      "rows": 380,
+      "sha256": "b2e057b0ed959f198b0f63d2391c01239f3608e6de5db68edab3f88e04d07ff3"
+    }
+  ],
+  "transformation": {
+    "rows_loaded": 1312,
+    "fitting_rows": 932,
+    "evaluation_rows": 380,
+    "ftr_rows_validated": 1312,
+    "output_columns": [
+      "season",
+      "date",
+      "home_team",
+      "away_team",
+      "home_goals",
+      "away_goals",
+      "source_division",
+      "dataset_role",
+      "bookmaker_home_odds",
+      "bookmaker_draw_odds",
+      "bookmaker_away_odds"
+    ]
+  },
+  "measurements": {
+    "scope": "all loaded rows",
+    "home_wins": 586,
+    "home_win_percentage": 44.664634,
+    "bookmaker_favourite_wins": 689,
+    "bookmaker_favourite_win_percentage": 52.515244,
+    "bookmaker_favourite_rule": "Minimum closing Bet365 decimal odds across 1/X/2; equal minima are joint favourites and win when the actual result is among them.",
+    "joint_favourite_rows": 11,
+    "joint_favourites": [
+      {
+        "season": "2022-23",
+        "date": "2022-09-04",
+        "division": "E0",
+        "home_team": "Man United",
+        "away_team": "Arsenal",
+        "favourite_outcomes": [
+          "1",
+          "2"
+        ],
+        "actual_result": "1"
+      },
+      {
+        "season": "2022-23",
+        "date": "2022-10-11",
+        "division": "E1",
+        "home_team": "Wigan",
+        "away_team": "Blackburn",
+        "favourite_outcomes": [
+          "1",
+          "2"
+        ],
+        "actual_result": "1"
+      },
+      {
+        "season": "2022-23",
+        "date": "2022-10-18",
+        "division": "E1",
+        "home_team": "Huddersfield",
+        "away_team": "Preston",
+        "favourite_outcomes": [
+          "1",
+          "2"
+        ],
+        "actual_result": "2"
+      },
+      {
+        "season": "2022-23",
+        "date": "2022-11-05",
+        "division": "E1",
+        "home_team": "Blackpool",
+        "away_team": "Luton",
+        "favourite_outcomes": [
+          "1",
+          "2"
+        ],
+        "actual_result": "2"
+      },
+      {
+        "season": "2022-23",
+        "date": "2022-11-05",
+        "division": "E1",
+        "home_team": "QPR",
+        "away_team": "West Brom",
+        "favourite_outcomes": [
+          "1",
+          "2"
+        ],
+        "actual_result": "2"
+      },
+      {
+        "season": "2022-23",
+        "date": "2023-02-18",
+        "division": "E0",
+        "home_team": "Everton",
+        "away_team": "Leeds",
+        "favourite_outcomes": [
+          "1",
+          "2"
+        ],
+        "actual_result": "1"
+      },
+      {
+        "season": "2022-23",
+        "date": "2023-04-07",
+        "division": "E1",
+        "home_team": "Middlesbrough",
+        "away_team": "Burnley",
+        "favourite_outcomes": [
+          "1",
+          "2"
+        ],
+        "actual_result": "2"
+      },
+      {
+        "season": "2022-23",
+        "date": "2023-04-07",
+        "division": "E1",
+        "home_team": "Millwall",
+        "away_team": "Luton",
+        "favourite_outcomes": [
+          "1",
+          "2"
+        ],
+        "actual_result": "X"
+      },
+      {
+        "season": "2022-23",
+        "date": "2023-04-07",
+        "division": "E1",
+        "home_team": "Reading",
+        "away_team": "Birmingham",
+        "favourite_outcomes": [
+          "1",
+          "2"
+        ],
+        "actual_result": "X"
+      },
+      {
+        "season": "2023-24",
+        "date": "2023-09-02",
+        "division": "E0",
+        "home_team": "Brighton",
+        "away_team": "Newcastle",
+        "favourite_outcomes": [
+          "1",
+          "2"
+        ],
+        "actual_result": "1"
+      },
+      {
+        "season": "2023-24",
+        "date": "2024-03-16",
+        "division": "E0",
+        "home_team": "Luton",
+        "away_team": "Nott'm Forest",
+        "favourite_outcomes": [
+          "1",
+          "2"
+        ],
+        "actual_result": "X"
+      }
+    ]
+  },
+  "held_out_evaluation": {
+    "fitting_rows_used": 932,
+    "held_out_rows_used_for_fitting": 0,
+    "held_out_matches_evaluated": 380,
+    "correct_predictions": 152,
+    "predictor_accuracy_percentage": 40.0,
+    "always_predict_1_correct": 175,
+    "always_predict_1_accuracy_percentage": 46.052632,
+    "bookmaker_favourite_correct": 227,
+    "bookmaker_favourite_accuracy_percentage": 59.736842,
+    "prediction_counts": {
+      "1": 154,
+      "X": 77,
+      "2": 149
+    }
+  }
+}
