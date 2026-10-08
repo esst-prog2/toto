@@ -84,9 +84,17 @@ def calculate_team_statistics(matches: pd.DataFrame) -> pd.DataFrame:
     for column in ("home_matches", "away_matches"):
         statistics[column] = statistics[column].fillna(0).astype(int)
 
-    for prefix in ("overall", "home", "away"):
-        for metric in ("ppm", "gdpm"):
-            column = f"{prefix}_{metric}"
-            statistics[f"{column}_norm"] = normalize_series(statistics[column])
-    return statistics
+    for metric in ("ppm", "gdpm"):
+        column = f"overall_{metric}"
+        statistics[f"{column}_norm"] = normalize_series(statistics[column])
 
+        # Home and away rates must share a reference to preserve venue differences.
+        venue_rates = statistics[[f"home_{metric}", f"away_{metric}"]]
+        pooled = pd.concat(
+            [venue_rates[f"home_{metric}"], venue_rates[f"away_{metric}"]],
+            keys=["home", "away"],
+        )
+        normalized = normalize_series(pooled)
+        for venue in ("home", "away"):
+            statistics[f"{venue}_{metric}_norm"] = normalized.loc[venue]
+    return statistics

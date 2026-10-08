@@ -35,13 +35,13 @@ def test_held_out_evaluation_uses_only_fitting_rows_and_has_exact_results() -> N
         "fitting_rows_used": 932,
         "held_out_rows_used_for_fitting": 0,
         "held_out_matches_evaluated": 380,
-        "correct_predictions": 152,
-        "predictor_accuracy_percentage": 40.0,
+        "correct_predictions": 158,
+        "predictor_accuracy_percentage": 41.578947,
         "always_predict_1_correct": 175,
         "always_predict_1_accuracy_percentage": 46.052632,
         "bookmaker_favourite_correct": 227,
         "bookmaker_favourite_accuracy_percentage": 59.736842,
-        "prediction_counts": {"1": 154, "X": 77, "2": 149},
+        "prediction_counts": {"1": 198, "X": 86, "2": 96},
     }
 
 
