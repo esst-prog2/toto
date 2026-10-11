@@ -26,6 +26,15 @@ def test_sources_transform_and_validate_against_ftr() -> None:
     assert report["measurements"]["joint_favourite_rows"] == 11
 
 
+def test_always_home_win_baseline_matches_independent_count() -> None:
+    records, _ = build_records(SOURCE_DIR)
+    evaluation = held_out_evaluation(records)
+
+    assert evaluation["held_out_matches_evaluated"] == 380
+    # User chose 175 independently from real outcomes; see PLANNING_LOG.md, 2026-10-11.
+    assert evaluation["always_predict_1_correct"] == 175
+
+
 def test_held_out_evaluation_uses_only_fitting_rows_and_has_exact_results() -> None:
     records, _ = build_records(SOURCE_DIR)
 
