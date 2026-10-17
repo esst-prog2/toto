@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from .data import load_historical_data, load_ticket_data
+from .data import load_historical_data, load_ticket_data, normalize_ticket
 from .models import DataValidationError, WorkflowResult
 from .predictor import history_issues, predict_fixture
 from .statistics import calculate_team_statistics
@@ -12,13 +12,14 @@ from .ticket import validate_ticket
 
 
 def run_workflow(history: pd.DataFrame, ticket: pd.DataFrame) -> WorkflowResult:
+    ticket = normalize_ticket(ticket)
     statistics = calculate_team_statistics(history)
     issues = validate_ticket(ticket, statistics.index)
 
     if not any(issue.code in {"missing_columns", "invalid_position"} for issue in issues):
         for row in ticket.sort_values("position").itertuples(index=False):
-            home_team = str(row.home_team).strip()
-            away_team = str(row.away_team).strip()
+            home_team = row.home_team
+            away_team = row.away_team
             if (
                 home_team in statistics.index
                 and away_team in statistics.index
@@ -40,8 +41,8 @@ def run_workflow(history: pd.DataFrame, ticket: pd.DataFrame) -> WorkflowResult:
         predict_fixture(
             statistics,
             int(row.position),
-            str(row.home_team),
-            str(row.away_team),
+            row.home_team,
+            row.away_team,
         )
         for row in ticket.sort_values("position").itertuples(index=False)
     )

@@ -6,13 +6,14 @@ from collections.abc import Iterable
 import pandas as pd
 
 from .config import TICKET_SIZE
-from .data import TICKET_COLUMNS
+from .data import TICKET_COLUMNS, normalize_ticket
 from .models import ValidationIssue
 
 
 def validate_ticket(
     ticket: pd.DataFrame, known_teams: Iterable[str]
 ) -> list[ValidationIssue]:
+    ticket = normalize_ticket(ticket)
     known = set(known_teams)
     issues: list[ValidationIssue] = []
     missing = [column for column in TICKET_COLUMNS if column not in ticket.columns]
@@ -58,8 +59,8 @@ def validate_ticket(
     for ordinal, (_, row) in enumerate(ticket.iterrows(), start=1):
         raw_position = parsed_positions.iloc[ordinal - 1]
         position = int(raw_position) if pd.notna(raw_position) and raw_position % 1 == 0 else ordinal
-        home = str(row["home_team"]).strip()
-        away = str(row["away_team"]).strip()
+        home = row["home_team"]
+        away = row["away_team"]
         if not home:
             issues.append(
                 ValidationIssue(

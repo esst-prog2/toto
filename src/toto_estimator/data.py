@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from .models import DataValidationError, ValidationIssue
+from .outcomes import outcome_from_goals
 
 HISTORICAL_COLUMNS = (
     "season",
@@ -104,9 +105,10 @@ def load_historical_data(path: str | Path) -> pd.DataFrame:
     frame["date"] = parsed_dates
     frame["home_goals"] = parsed_goals["home_goals"].astype(int)
     frame["away_goals"] = parsed_goals["away_goals"].astype(int)
-    frame["result"] = "X"
-    frame.loc[frame["home_goals"] > frame["away_goals"], "result"] = "1"
-    frame.loc[frame["home_goals"] < frame["away_goals"], "result"] = "2"
+    frame["result"] = [
+        outcome_from_goals(home, away)
+        for home, away in zip(frame["home_goals"], frame["away_goals"])
+    ]
     return frame.sort_values("date", kind="stable").reset_index(drop=True)
 
 
@@ -140,7 +142,13 @@ def load_ticket_data(path: str | Path) -> pd.DataFrame:
         raise DataValidationError(issues)
 
     frame["position"] = numeric_positions.astype(int)
-    frame["home_team"] = frame["home_team"].astype(str).str.strip()
-    frame["away_team"] = frame["away_team"].astype(str).str.strip()
-    return frame
+    return normalize_ticket(frame)
 
+
+def normalize_ticket(ticket: pd.DataFrame) -> pd.DataFrame:
+    """Copy ticket input and canonicalize team names without changing its structure."""
+    normalized = ticket.copy(deep=True)
+    for column in ("home_team", "away_team"):
+        if column in normalized.columns:
+            normalized[column] = normalized[column].astype(str).str.strip()
+    return normalized

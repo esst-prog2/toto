@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
-import io
 import json
 import sys
 from collections import Counter
@@ -17,10 +16,17 @@ from pathlib import Path
 
 import pandas as pd
 
+# Support both direct script execution and imports as the scripts package.
+if __package__:
+    from .artifact_io import check_overwrite, ensure_parent_directories, serialize_csv
+else:
+    from artifact_io import check_overwrite, ensure_parent_directories, serialize_csv
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
+from toto_estimator.outcomes import outcome_from_goals
 from toto_estimator.predictor import predict_fixture
 from toto_estimator.statistics import calculate_team_statistics
 
@@ -126,14 +132,6 @@ def _odds(value: str, field: str, source: SourceFile, row_number: int) -> str:
     return str(parsed)
 
 
-def _result(home_goals: int, away_goals: int) -> str:
-    if home_goals > away_goals:
-        return "1"
-    if home_goals < away_goals:
-        return "2"
-    return "X"
-
-
 def load_source(source_dir: Path, source: SourceFile) -> tuple[list[dict[str, object]], str]:
     path = source_dir / source.filename
     with path.open(encoding="utf-8-sig", newline="") as handle:
@@ -168,7 +166,7 @@ def load_source(source_dir: Path, source: SourceFile) -> tuple[list[dict[str, ob
             )
         home_goals = _integer(row["FTHG"].strip(), "FTHG", source, row_number)
         away_goals = _integer(row["FTAG"].strip(), "FTAG", source, row_number)
-        derived_result = _result(home_goals, away_goals)
+        derived_result = outcome_from_goals(home_goals, away_goals)
         expected_ftr = {"1": "H", "X": "D", "2": "A"}[derived_result]
         if row["FTR"].strip() != expected_ftr:
             raise ValueError(
@@ -227,11 +225,7 @@ def build_records(source_dir: Path) -> tuple[list[dict[str, object]], list[dict[
 
 
 def serialize_records(records: list[dict[str, object]]) -> bytes:
-    buffer = io.StringIO(newline="")
-    writer = csv.DictWriter(buffer, fieldnames=OUTPUT_COLUMNS, lineterminator="\n")
-    writer.writeheader()
-    writer.writerows(records)
-    return buffer.getvalue().encode("utf-8")
+    return serialize_csv(records, OUTPUT_COLUMNS)
 
 
 def _favourites(record: dict[str, object]) -> list[str]:
@@ -255,7 +249,7 @@ def held_out_evaluation(records: list[dict[str, object]]) -> dict[str, object]:
     favourite_correct = 0
     calls: Counter[str] = Counter()
     for position, record in enumerate(evaluation, start=1):
-        actual = _result(int(record["home_goals"]), int(record["away_goals"]))
+        actual = outcome_from_goals(int(record["home_goals"]), int(record["away_goals"]))
         prediction = predict_fixture(
             statistics,
             position,
@@ -293,7 +287,7 @@ def measurement_report(
     favourite_wins = 0
     joint_favourites: list[dict[str, object]] = []
     for record in records:
-        result = _result(int(record["home_goals"]), int(record["away_goals"]))
+        result = outcome_from_goals(int(record["home_goals"]), int(record["away_goals"]))
         home_wins += result == "1"
         favourites = _favourites(record)
         favourite_wins += result in favourites
@@ -348,15 +342,10 @@ def serialize_report(report: dict[str, object]) -> bytes:
 def write_artifacts(
     source_dir: Path, output: Path, report_path: Path, force: bool = False
 ) -> dict[str, object]:
-    if not force:
-        existing = [path for path in (output, report_path) if path.exists()]
-        if existing:
-            names = ", ".join(str(path) for path in existing)
-            raise FileExistsError(f"Refusing to overwrite existing file(s): {names}")
+    check_overwrite((output, report_path), force)
     records, source_evidence = build_records(source_dir)
     report = measurement_report(records, source_evidence)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    report_path.parent.mkdir(parents=True, exist_ok=True)
+    ensure_parent_directories((output, report_path))
     output.write_bytes(serialize_records(records))
     report_path.write_bytes(serialize_report(report))
     return report

@@ -4,13 +4,17 @@
 from __future__ import annotations
 
 import argparse
-import csv
 import hashlib
-import io
 from datetime import date, timedelta
 from pathlib import Path
 
 import numpy as np
+
+# Support both direct script execution and imports as the scripts package.
+if __package__:
+    from .artifact_io import check_overwrite, ensure_parent_directories, serialize_csv
+else:
+    from artifact_io import check_overwrite, ensure_parent_directories, serialize_csv
 
 RANDOM_SEED = 20260927
 BASE_EXPECTED_GOALS = 1.35
@@ -96,11 +100,7 @@ def generate_records() -> list[dict[str, object]]:
 
 
 def serialize_records(records: list[dict[str, object]]) -> bytes:
-    buffer = io.StringIO(newline="")
-    writer = csv.DictWriter(buffer, fieldnames=CSV_COLUMNS, lineterminator="\n")
-    writer.writeheader()
-    writer.writerows(records)
-    return buffer.getvalue().encode("utf-8")
+    return serialize_csv(records, CSV_COLUMNS)
 
 
 def checksum_line(csv_bytes: bytes, filename: str) -> str:
@@ -108,14 +108,9 @@ def checksum_line(csv_bytes: bytes, filename: str) -> str:
 
 
 def write_dataset(output: Path, checksum: Path, force: bool = False) -> None:
-    if not force:
-        existing = [path for path in (output, checksum) if path.exists()]
-        if existing:
-            names = ", ".join(str(path) for path in existing)
-            raise FileExistsError(f"Refusing to overwrite existing file(s): {names}")
+    check_overwrite((output, checksum), force)
     csv_bytes = serialize_records(generate_records())
-    output.parent.mkdir(parents=True, exist_ok=True)
-    checksum.parent.mkdir(parents=True, exist_ok=True)
+    ensure_parent_directories((output, checksum))
     output.write_bytes(csv_bytes)
     checksum.write_text(
         checksum_line(csv_bytes, output.name), encoding="utf-8", newline=""

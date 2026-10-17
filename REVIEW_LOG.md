@@ -39,3 +39,47 @@ No high-severity finding was identified. The real-data spike and shared normaliz
 ### Verification and handoff
 
 The initial read-only review ran the existing suite with bytecode/cache writes disabled: 47 tests passed. This documentation-only follow-up does not rerun tests or regenerate measurements. Documentation values were checked against the committed measurement artifact and investigation report. `git diff --check` passed; repository diff inspection confirmed only the documentation files listed above changed and that the planning-log change is append-only. The user approved the dedicated Review 1 commit on 2026-10-17 with message `Review specification compliance and align documentation`, following branch, exact seven-file scope, and whitespace checks. Findings 3–6 remain open for later reviews. No branch change, push, or merge is authorized.
+
+## Review 2: Architecture and duplicated code
+
+Date: 2026-10-17. Branch: `hw6-review`. Status: all four approved fixes implemented and verified; user approved the dedicated commit on 2026-10-17.
+
+### Scope
+
+Reviewed the entire tracked repository for duplicated implementations, architectural inconsistencies, accumulated patches, and generated build artifacts, including the deferred build-copy finding from Review 1. Excluded ignored virtual environments and caches. The user subsequently authorized all four findings below to be addressed in this review. No prediction algorithm changes, new features, committed dataset changes, or measurement changes were authorized or made.
+
+### Findings and fixes
+
+Locations identify the pre-refactor review snapshot; moved code may now have different line numbers.
+
+| ID | Finding and original locations | Severity | Why it matters | Fix applied |
+| --- | --- | --- | --- | --- |
+| 1 | Eight tracked modules under `build/lib/toto_estimator/`; obsolete independent scaling at `build/lib/toto_estimator/statistics.py:87` versus shared scaling at `src/toto_estimator/statistics.py:87`; missing build exclusion at `.gitignore:1`. | Medium | Seven identical copies and one divergent copy create competing implementations and repeated generated-file changes. | Removed all eight modules from Git tracking, retaining local ignored copies; added `/build/` to `.gitignore`. `src/` remains authoritative. Resolves the build-copy issue deferred as Review 1 finding 3. |
+| 2 | Trimmed names in `src/toto_estimator/ticket.py:61` and `src/toto_estimator/service.py:20`, but original names passed into prediction at `service.py:43`. | Medium | A whitespace-padded valid team passed validation but raised an exception during prediction. | Added `data.normalize_ticket`, which copies input and normalizes team-name columns. The service establishes that representation before validation/history checks/prediction; loader and standalone validator reuse the same function. Removed local stripping from ticket validation and service iteration. No mutation of caller tickets. |
+| 3 | Actual-outcome calculation duplicated at `src/toto_estimator/data.py:107` and `scripts/build_real_spike_dataset.py:129`. | Low | Two implementations of the same home-perspective rule could drift. | Added `src/toto_estimator/outcomes.py:outcome_from_goals`; loader and real adapter reuse it. Removed the adapter's private duplicate. Test expectations remain independent literal outcomes and independently chosen baseline counts. |
+| 4 | Deterministic serialization and overwrite policy duplicated at `scripts/generate_synthetic_history.py:98,110` and `scripts/build_real_spike_dataset.py:229,348`. | Low | Serialization or overwrite-policy edits required synchronized changes despite byte-reproducibility requirements. | Added offline-only `scripts/artifact_io.py` with shared CSV serialization, overwrite checks, and parent-directory creation. Both scripts retain their existing public wrappers and reuse the utilities. Direct-script and package-module launches are supported without importing synthetic generator information into runtime code. |
+
+The existing division between UI, service, validation, statistics, and prediction remains. Startup and standalone prediction checks retain their intentional safeguards. Committed generated datasets/checksums/measurement evidence remain tracked. Existing import bootstraps remain; no evidence established that they were obsolete. Historical-data validation, empty-input handling, and ticket-message improvements deferred from Review 1 remain outside this review; the ticket-name representation inconsistency above is resolved.
+
+### Tests added
+
+- `tests/test_service.py`: six parameterized home/away leading/trailing/tab/newline whitespace cases compare full workflow results against canonical input and assert that caller input is unchanged. Additional regressions check normalized duplicate/self-pair errors and structured unknown-team failure.
+- `tests/test_outcomes.py`: independent literal expectations for home wins, away wins, scoreless draws, and scoring draws.
+- `tests/test_artifact_io.py`: verifies Unicode UTF-8 bytes, CSV quoting, column order, and LF endings; four integration cases verify that either existing output blocks both writers without replacing it or creating the other file, while explicit force preserves dataset bytes and creates parent directories.
+- Existing tests continue to cover exact synthetic/real artifact regeneration, checksum agreement, fixed predictor rules, fitting isolation, and Streamlit startup/prediction behavior. Independent expectations were not replaced by calls to the new production helper.
+
+### Verification results
+
+- Complete suite: `PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B -m pytest -q -p no:cacheprovider` — **64 passed in 3.49s** (47 existing cases plus 17 new cases).
+- `git diff --check` and `git diff --cached --check` passed, including staged build removals.
+- Package resolution points to `src/toto_estimator/__init__.py`. Existing Streamlit AppTest and launcher regressions passed; package discovery and pytest still select `src/`. No build files remain in `git ls-files build/`.
+- `src/toto_estimator/predictor.py`, `statistics.py`, and `config.py` are byte-identical to pre-review HEAD: prediction formula, weights, thresholds, normalization, and eligibility rules are unchanged.
+- Reproduced original evaluation by loading the historical statistics implementation from parent of commit `d98c15e` into memory and using the existing fitting/evaluation pipeline: **152/380 = 40.000000%**, calls **154/77/149**. No checkout or historical source edit was needed.
+- Reproduced current evaluation: **158/380 = 41.578947%**, calls **198/86/96**. Both versions retain always-1 **175/380 = 46.052632%** and closing-Bet365 favourite **227/380 = 59.736842%**; fitting uses 932 rows and evaluation uses 380.
+- Ran both offline scripts through direct file execution and `python -m` execution into temporary directories. Synthetic CSV/checksum and real CSV/measurement JSON were byte-identical to committed artifacts in both launch modes.
+- Compared every tracked `data/` file against HEAD bytes: unchanged, including raw sources, sample ticket, generated CSVs, checksum, and measurements.
+- Final scope is limited to the eight build untracking entries, `.gitignore`, the two offline scripts, three runtime boundary/loader modules, two shared utility modules, three test files, and the two logs. Earlier planning-log content is unchanged; only new decisions were appended.
+
+### Remaining concerns and handoff
+
+All four approved architectural findings are addressed. No new behavior risk was identified by the regression, byte-comparison, and historical-evaluation checks. Local build copies remain ignored and may be regenerated; they are no longer versioned sources. Existing valid input behavior and all prediction results are preserved; padded direct-service team names now behave consistently. The user approved the dedicated Review 2 commit on 2026-10-17 with message `Review architecture and eliminate duplicated implementations`. Pre-commit verification again passed all 64 tests (3.39s), whitespace checks, exact review file scope, and build untracking/ignore checks. No push, merge, or branch change is authorized.
