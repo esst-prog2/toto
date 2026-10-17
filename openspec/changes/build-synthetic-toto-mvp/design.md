@@ -1,6 +1,6 @@
 ## Context
 
-The repository currently contains project documentation and an initialized OpenSpec workspace, but no application code or tests. The MVP spans deterministic data generation, reusable data validation and prediction logic, a UI-independent orchestration layer, and a local Streamlit interface. See `proposal.md` for motivation and the four delta specs for behavioral contracts.
+At the time of the original proposal, the repository contained project documentation and an initialized OpenSpec workspace, but no application code or tests. The MVP spans deterministic data generation, reusable data validation and prediction logic, a UI-independent orchestration layer, and a local Streamlit interface. See `proposal.md` for motivation and the four delta specs for behavioral contracts.
 
 The implementation must preserve a hard information boundary: hidden synthetic strengths belong to an offline generator only, while runtime components consume the public historical CSV. Python 3.11 is the compatibility floor, and development verification uses the installed Python 3.13 environment.
 
@@ -70,11 +70,17 @@ Alternative considered: one validator for both concerns. Rejected because synthe
 
 ### 5. Normalize each metric across the loaded competition
 
+Historical note: the six-independent-scale rule below records the original September 2026 design. It was superseded by the user-authorized shared-venue rule on 2026-10-08; the current rule is stated immediately afterward.
+
 First expand match rows into team-perspective observations containing venue, points, goals for, goals against, and goal difference. Aggregate overall, home-only, and away-only match counts, points per match, and goal difference per match.
 
 Apply min-max normalization independently to these six metric series: overall PPM, overall GDPM, home PPM, home GDPM, away PPM, and away GDPM. Use `(value - minimum) / (maximum - minimum)`; when a series has no range, assign 0.5 to every team.
 
-For a fixture:
+**Current rule (supersedes independent home/away scaling, 2026-10-08):** Normalize overall PPM and overall GDPM independently across teams in the supplied history. For each venue metric (PPM or GDPM), pool the home and away team rates and use one minimum and maximum for both venue columns. Apply `(value - minimum) / (maximum - minimum)` using those shared bounds. If the non-missing values in a normalization pool are tied, map them to 0.5; missing rates remain missing. Thus, a constant home column alone does not trigger neutral values if the pooled away rates differ. In chronological evaluation, use only fitting history to calculate raw statistics and bounds.
+
+This preserves a common reference for home/away comparisons. It changes neither overall scaling nor the rating composition, weights, minimum-history limits, or inclusive draw band below. Authorization and results are retained in `PLANNING_LOG.md` (2026-10-08) and [the investigation report](../../../docs/home-advantage-investigation.md).
+
+For a fixture (unchanged composition):
 
 ```text
 overall_score(team) = 0.70 * overall_ppm_norm + 0.30 * overall_gdpm_norm
