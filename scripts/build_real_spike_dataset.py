@@ -29,6 +29,7 @@ if str(PROJECT_ROOT / "src") not in sys.path:
 from toto_estimator.outcomes import outcome_from_goals
 from toto_estimator.predictor import predict_fixture
 from toto_estimator.statistics import calculate_team_statistics
+from toto_estimator.validation import exact_integer
 
 
 @dataclass(frozen=True)
@@ -106,10 +107,10 @@ def _sha256(path: Path) -> str:
 
 def _integer(value: str, field: str, source: SourceFile, row_number: int) -> int:
     try:
-        parsed = int(value)
+        parsed = exact_integer(value)
     except ValueError as exc:
         raise ValueError(
-            f"{source.filename} row {row_number}: {field} must be an integer."
+            f"{source.filename} row {row_number}: {field} {exc}."
         ) from exc
     if parsed < 0:
         raise ValueError(
@@ -125,21 +126,28 @@ def _odds(value: str, field: str, source: SourceFile, row_number: int) -> str:
         raise ValueError(
             f"{source.filename} row {row_number}: {field} must be decimal odds."
         ) from exc
-    if parsed <= 1:
+    if not parsed.is_finite() or parsed <= 1:
         raise ValueError(
-            f"{source.filename} row {row_number}: {field} must be greater than 1."
+            f"{source.filename} row {row_number}: {field} must be finite decimal odds greater than 1."
         )
     return str(parsed)
 
 
 def load_source(source_dir: Path, source: SourceFile) -> tuple[list[dict[str, object]], str]:
     path = source_dir / source.filename
-    with path.open(encoding="utf-8-sig", newline="") as handle:
-        reader = csv.DictReader(handle)
-        missing = [column for column in SOURCE_COLUMNS if column not in (reader.fieldnames or ())]
-        if missing:
-            raise ValueError(f"{source.filename} is missing columns: {', '.join(missing)}.")
-        source_rows = list(reader)
+    try:
+        with path.open(encoding="utf-8-sig", newline="") as handle:
+            reader = csv.DictReader(handle, strict=True)
+            missing = [column for column in SOURCE_COLUMNS if column not in (reader.fieldnames or ())]
+            if missing:
+                raise ValueError(f"{source.filename} is missing columns: {', '.join(missing)}.")
+            headers = reader.fieldnames or []
+            if len(headers) != len(set(headers)):
+                raise ValueError(f"{source.filename}: duplicate column headers.")
+            source_rows = list(reader)
+
+    except (OSError, UnicodeError, csv.Error) as exc:
+        raise ValueError(f"{source.filename}: could not read source CSV: {exc}") from exc
 
     if len(source_rows) != source.expected_rows:
         raise ValueError(
@@ -148,6 +156,12 @@ def load_source(source_dir: Path, source: SourceFile) -> tuple[list[dict[str, ob
 
     records: list[dict[str, object]] = []
     for row_number, row in enumerate(source_rows, start=2):
+        if None in row:
+            raise ValueError(f"{source.filename} row {row_number}: unexpected extra fields.")
+        for field in SOURCE_COLUMNS:
+            value = row.get(field)
+            if not isinstance(value, str) or not value.strip():
+                raise ValueError(f"{source.filename} row {row_number}: {field} must not be missing or blank.")
         if row["Div"].strip() != source.division:
             raise ValueError(
                 f"{source.filename} row {row_number}: expected division {source.division}."

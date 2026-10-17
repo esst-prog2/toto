@@ -15,6 +15,10 @@ def serialize_csv(records: Iterable[Mapping[str, object]], columns: Sequence[str
 
 
 def check_overwrite(paths: Sequence[Path], force: bool = False) -> None:
+    for index, path in enumerate(paths):
+        for other in paths[:index]:
+            if path.resolve() == other.resolve() or (path.exists() and other.exists() and path.samefile(other)):
+                raise ValueError(f"Output destinations must be distinct: {other} and {path}.")
     if not force:
         existing = [path for path in paths if path.exists()]
         if existing:

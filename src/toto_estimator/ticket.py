@@ -6,114 +6,53 @@ from collections.abc import Iterable
 import pandas as pd
 
 from .config import TICKET_SIZE
-from .data import TICKET_COLUMNS, normalize_ticket
-from .models import ValidationIssue
+from .data import normalize_ticket
+from .models import DataValidationError, ValidationIssue
+from .validation import exact_integer
 
 
-def validate_ticket(
-    ticket: pd.DataFrame, known_teams: Iterable[str]
-) -> list[ValidationIssue]:
-    ticket = normalize_ticket(ticket)
+def validate_ticket(ticket: pd.DataFrame, known_teams: Iterable[str]) -> list[ValidationIssue]:
+    try:
+        ticket = normalize_ticket(ticket)
+    except DataValidationError as exc:
+        return exc.issues
     known = set(known_teams)
     issues: list[ValidationIssue] = []
-    missing = [column for column in TICKET_COLUMNS if column not in ticket.columns]
-    if missing:
-        return [
-            ValidationIssue(
-                "missing_columns",
-                f"Ticket is missing required columns: {', '.join(missing)}.",
-            )
-        ]
-
     if len(ticket) != TICKET_SIZE:
-        issues.append(
-            ValidationIssue(
-                "ticket_size",
-                f"Ticket must contain exactly {TICKET_SIZE} fixtures; found {len(ticket)}.",
-            )
-        )
-
-    parsed_positions = pd.to_numeric(ticket["position"], errors="coerce")
-    integral = parsed_positions.notna() & (parsed_positions % 1 == 0)
-    for index in ticket.index[~integral]:
-        issues.append(
-            ValidationIssue(
-                "invalid_position",
-                f"Ticket row {int(index) + 2} has a non-integer position.",
-                row=int(index) + 2,
-            )
-        )
-
-    valid_positions = parsed_positions[integral].astype(int)
-    expected = set(range(1, TICKET_SIZE + 1))
-    actual = set(valid_positions.tolist())
-    if actual != expected or valid_positions.duplicated(keep=False).any():
-        issues.append(
-            ValidationIssue(
-                "ticket_positions",
-                f"Ticket positions must be unique and cover 1 through {TICKET_SIZE}.",
-            )
-        )
-
-    pairs: dict[tuple[str, str], list[int]] = defaultdict(list)
-    for ordinal, (_, row) in enumerate(ticket.iterrows(), start=1):
-        raw_position = parsed_positions.iloc[ordinal - 1]
-        position = int(raw_position) if pd.notna(raw_position) and raw_position % 1 == 0 else ordinal
-        home = row["home_team"]
-        away = row["away_team"]
-        if not home:
-            issues.append(
-                ValidationIssue(
-                    "blank_home_team",
-                    f"Position {position}: choose a home team.",
-                    position=position,
-                )
-            )
-        elif home not in known:
-            issues.append(
-                ValidationIssue(
-                    "unknown_team",
-                    f"Position {position}: home team {home} is not found in the historical data.",
-                    position=position,
-                )
-            )
-        if not away:
-            issues.append(
-                ValidationIssue(
-                    "blank_away_team",
-                    f"Position {position}: choose an away team.",
-                    position=position,
-                )
-            )
-        elif away not in known:
-            issues.append(
-                ValidationIssue(
-                    "unknown_team",
-                    f"Position {position}: away team {away} is not found in the historical data.",
-                    position=position,
-                )
-            )
-        if home and away and home == away:
-            issues.append(
-                ValidationIssue(
-                    "identical_teams",
-                    f"Position {position}: home and away teams must differ.",
-                    position=position,
-                )
-            )
+        issues.append(ValidationIssue("ticket_size", f"Ticket must contain exactly {TICKET_SIZE} fixtures; found {len(ticket)}."))
+    positions: dict[int, list[int]] = defaultdict(list)
+    pairs: dict[tuple[str, str], list[tuple[int | None, int]]] = defaultdict(list)
+    for ordinal, row in enumerate(ticket.itertuples(index=False), start=1):
+        source_row = ordinal + 1
+        try:
+            position = exact_integer(row.position)
+        except ValueError as exc:
+            position = None
+            issues.append(ValidationIssue("invalid_position", f"position at ticket row {source_row} {exc}; received {row.position!r}.", row=source_row))
+        if position is not None:
+            positions[position].append(source_row)
+            if not 1 <= position <= TICKET_SIZE:
+                issues.append(ValidationIssue("ticket_positions", f"Ticket row {source_row}: position {position} is out of range; use 1 through {TICKET_SIZE}.", position=position, row=source_row))
+        label = f"Position {position}" if position is not None else f"Ticket row {source_row}"
+        for venue, team in (("home", row.home_team), ("away", row.away_team)):
+            if not team:
+                issues.append(ValidationIssue(f"blank_{venue}_team", f"{label}: choose a nonblank {venue} team name string (row {source_row}).", position=position, row=source_row))
+            elif team not in known:
+                issues.append(ValidationIssue("unknown_team", f"{label}: {venue} team {team} is not found in the historical data (row {source_row}).", position=position, row=source_row))
+        home, away = row.home_team, row.away_team
+        if home and home == away:
+            issues.append(ValidationIssue("identical_teams", f"{label}: home and away teams must differ (row {source_row}).", position=position, row=source_row))
         elif home and away:
-            pairs[tuple(sorted((home, away)))].append(position)
-
-    for pair, positions in pairs.items():
-        if len(positions) > 1:
-            joined = ", ".join(str(position) for position in positions)
-            for position in positions:
-                issues.append(
-                    ValidationIssue(
-                        "duplicate_pair",
-                        f"Position {position}: pairing {pair[0]}-{pair[1]} is duplicated at positions {joined}.",
-                        position=position,
-                    )
-                )
+            pairs[tuple(sorted((home, away)))].append((position, source_row))
+    missing = sorted(set(range(1, TICKET_SIZE + 1)) - positions.keys())
+    if missing:
+        issues.append(ValidationIssue("ticket_positions", f"Missing ticket positions: {', '.join(map(str, missing))}."))
+    for position, rows in positions.items():
+        if len(rows) > 1:
+            for source_row in rows:
+                issues.append(ValidationIssue("ticket_positions", f"Position {position} is duplicated at ticket rows {', '.join(map(str, rows))}.", position=position, row=source_row))
+    for pair, entries in pairs.items():
+        if len(entries) > 1:
+            for position, source_row in entries:
+                issues.append(ValidationIssue("duplicate_pair", f"Position {position} (row {source_row}): pairing {pair[0]}-{pair[1]} is duplicated at ticket rows {', '.join(str(r) for _, r in entries)}.", position=position, row=source_row))
     return issues
-

@@ -70,3 +70,25 @@ def test_history_issues_identify_team_venue_and_position() -> None:
     assert "A" in issues[0].message
     assert "away" in issues[1].message
 
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -float("inf")])
+def test_nonfinite_difference_is_rejected(value):
+    with pytest.raises(ValueError, match="finite"):
+        outcome_from_difference(value)
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -float("inf")])
+@pytest.mark.parametrize("column,team", [("overall_ppm_norm", "A"), ("home_gdpm_norm", "A"), ("away_ppm_norm", "B")])
+def test_nonfinite_rating_inputs_are_rejected(value, column, team):
+    statistics = _statistics()
+    statistics.at[team, column] = value
+    with pytest.raises(ValueError, match="finite"):
+        predict_fixture(statistics, 1, "A", "B")
+
+
+def test_nonfinite_rating_result_is_rejected(monkeypatch):
+    import toto_estimator.predictor as predictor
+    monkeypatch.setattr(predictor, "_component", lambda *args: float("inf"))
+    with pytest.raises(ValueError, match="finite"):
+        fixture_ratings(_statistics(), "A", "B")

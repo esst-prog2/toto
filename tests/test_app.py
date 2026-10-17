@@ -1,6 +1,8 @@
 import hashlib
 from pathlib import Path
 
+import pytest
+
 from streamlit.testing.v1 import AppTest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -87,3 +89,20 @@ def test_new_streamlit_session_restores_sample_ticket() -> None:
     restarted = AppTest.from_file(APP_PATH, default_timeout=15).run()
     assert restarted.selectbox[0].value == "Team A"
     assert restarted.selectbox[1].value == "Team B"
+
+
+@pytest.mark.parametrize("content", [b"", b"season,date,home_team,away_team,home_goals,away_goals\n", b"\xff"])
+def test_startup_bad_history_is_displayed_without_crashing(tmp_path, monkeypatch, content):
+    import streamlit as st
+    from toto_estimator import config
+    path = tmp_path / "bad-history.csv"
+    path.write_bytes(content)
+    monkeypatch.setattr(config, "HISTORICAL_DATA_PATH", path)
+    st.cache_data.clear()
+    try:
+        app = AppTest.from_file(APP_PATH, default_timeout=15).run()
+        assert not app.exception
+        assert any("Startup data is invalid" in error.value for error in app.error)
+        assert len(app.dataframe) == 0
+    finally:
+        st.cache_data.clear()

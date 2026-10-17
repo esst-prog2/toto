@@ -83,3 +83,52 @@ The existing division between UI, service, validation, statistics, and predictio
 ### Remaining concerns and handoff
 
 All four approved architectural findings are addressed. No new behavior risk was identified by the regression, byte-comparison, and historical-evaluation checks. Local build copies remain ignored and may be regenerated; they are no longer versioned sources. Existing valid input behavior and all prediction results are preserved; padded direct-service team names now behave consistently. The user approved the dedicated Review 2 commit on 2026-10-17 with message `Review architecture and eliminate duplicated implementations`. Pre-commit verification again passed all 64 tests (3.39s), whitespace checks, exact review file scope, and build untracking/ignore checks. No push, merge, or branch change is authorized.
+
+## Review 3: Error handling and input validation
+
+Date: 2026-10-17. Branch: `hw6-review`. Status: all nine approved fixes implemented and verified; user approved the dedicated commit on 2026-10-17.
+
+### Scope
+
+Reviewed the entire tracked repository, tracing input failures through historical/ticket loaders, service orchestration, Streamlit, prediction, offline source adaptation, and artifact writing. Revisited deferred Review 1 findings 4–6. The user authorized all nine findings below, focused regression tests, and documentation; no formula changes, features, committed data/measurement changes, commit, push, merge, or branch switch were authorized.
+
+### Findings and fixes
+
+Locations refer to the pre-implementation Review 3 snapshot; refactored code may have moved.
+
+| ID | Finding / original locations | Severity | Fix implemented |
+| --- | --- | --- | --- |
+| 1 | Historical validation bypassed at `src/toto_estimator/service.py:14`; `statistics.py:17` truncated fractional goals. Invalid history could produce successful predictions or uncaught exceptions. | Medium | Extracted `validate_historical_data` and applied it to CSV loading and direct service input. Shared shape checks reject unsupported input types, duplicate/missing columns, invalid dates, non-string/blank or identical opponents, invalid goals, and optional supplied results that are not 1/X/2 or disagree with goals. Retains legitimate extra columns and copies caller input. Resolves deferred Review 1 finding 4. |
+| 2 | Empty files/header-only history escaped structured handling at `data.py:25`, `statistics.py:72`, `service.py:58`, and `app.py:39`. | Medium | Empty CSV text produces `DataValidationError`; zero-match history is rejected before statistics. Existing Streamlit startup error rendering handles these structured failures without new UI exception handlers. Resolves deferred Review 1 finding 5. |
+| 3 | Unchecked numeric casts at `data.py:86,106,131,144` could wrap oversized goals/positions and change outcomes. | Medium | Shared exact integer parsing checks finite integral values and signed 64-bit representability before conversion. Decimal strings are not routed through floats; already supplied floats are checked using their exact represented value. Booleans and unsupported objects are rejected. Errors identify field, source row, and offending value. No football-specific score cap was introduced. |
+| 4 | Ambiguous CSV headers/row widths and bad encoding were inconsistently handled at `data.py:25,38,53`. | Medium | Strict CSV parsing rejects duplicate headers and short/long rows before DataFrame construction. Expected file, UTF-8, and CSV syntax errors become contextual `DataValidationError`. Distinct additional columns remain permitted. |
+| 5 | Parsed ticket positions were not used consistently at `ticket.py:36,42` and `service.py:20,31`; string sorting and conversion failures remained. | Medium | Ticket normalization converts accepted integers, integral decimal strings/numbers, and mixed supported representations to canonical integers. Validation, ordering, and prediction use those values. Invalid values remain available for structured diagnostics and cannot reach prediction. Source rows use ordinal positions independently of DataFrame index labels. |
+| 6 | Generic position messages and globally skipped history checks at `ticket.py:50` and `service.py:19`. | Low | Reports duplicate positions with every affected source row, missing positions, out-of-range values, and malformed position values. Fixture checks continue independently, and service history checks continue for safely identifiable teams even when another position is invalid. Atomic behavior remains: failures return zero predictions. Resolves deferred Review 1 finding 6. |
+| 7 | Missing source cells/non-finite odds escaped contextual validation at `scripts/build_real_spike_dataset.py:121,128,150,185`. | Medium | Required cells are checked before string operations; malformed source structure/encoding receives filename context. Odds must be finite decimal values greater than one; all field errors preserve filename/row/field. Goals reuse exact integer checks. The adapter remains fail-fast. |
+| 8 | NaN rating values could become draws at `predictor.py:80,97`. | Low | Added finite guards for every rating component input, calculated ratings/difference, and direct difference classification. Structured errors propagate atomically through the service, including a late fixture failure. Formula expressions, classification branches, thresholds, and weights remain intact. |
+| 9 | Colliding output destinations were accepted at `scripts/artifact_io.py:17`, generator `:110`, and adapter `:342`. | Low | Shared pre-write checks reject identical/resolved equivalent paths, symlink aliases, and existing hard-link aliases, including with `--force`. Checks precede directory creation and output writes. Existing distinct-path overwrite protection/force behavior remains. |
+
+No broad `except Exception` handler was introduced. Expected conversion/file/parser failures are handled explicitly; existing standalone prediction eligibility checks and independent test expectations remain. The outcome-from-goals helper, normalization calculation, and configuration were not modified.
+
+### Regression tests added
+
+- New `tests/test_validation_regressions.py`: direct historical/ticket type and schema failures, duplicate DataFrame columns, invalid goals/dates/opponents/results, empty history, caller immutability and extra columns, empty/encoded/malformed CSVs, exact integer bounds and fractional precision, row/field overflow diagnostics, canonical mixed/decimal/string position ordering, index-independent errors, duplicate/missing/out-of-range position details, independent history checks after a position failure, and atomic late prediction failure.
+- New `tests/test_source_validation.py`: malformed/missing/non-finite/too-small odds for all three bookmaker fields; every required blank source cell; truncated rows, duplicate headers, surplus fields and bad encoding; invalid/oversized source goals; FTR consistency and legitimate extra fields.
+- `tests/test_predictor.py`: NaN and positive/negative infinite differences and rating components, plus invalid calculated results. Existing hand-calculated formula and inclusive-boundary tests remain unchanged.
+- `tests/test_artifact_io.py`: both writers reject identical, resolved-equivalent, symlink, and hard-link destinations with and without force, without changing existing bytes or creating output directories. Existing overwrite/force and byte-reproduction cases remain unchanged.
+- `tests/test_app.py`: empty, header-only, and invalid UTF-8 history renders startup errors without an unexpected exception or prediction table.
+
+### Verification results
+
+- Complete suite: `PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B -m pytest -q -p no:cacheprovider` — **220 passed in 6.06s**, comprising 64 existing cases and 156 added cases.
+- `git diff --check` passed. Final scope inspection confirms only the validation/guard changes, focused tests, and the two logs changed; earlier planning-log bytes are intact.
+- Predictor file changes are limited to finite-value validation. AST comparison against pre-review HEAD confirms unchanged component arithmetic, all rating/difference assignments, and inclusive 1/X/2 classification branches. `history_issues` and `predict_fixture` remain structurally identical. `statistics.py`, `config.py`, and `outcomes.py` are byte-identical to HEAD.
+- Original evaluation reproduced using the historical statistics implementation from the parent of `d98c15e`, loaded into memory without changing checkout: **152/380 = 40.000000%**, calls **154/77/149**.
+- Current evaluation reproduced: **158/380 = 41.578947%**, calls **198/86/96**. Both evaluations use 932 fitting rows and 380 evaluation rows, with no held-out fitting rows.
+- Baselines unchanged for both versions: always-1 **175/380 = 46.052632%**; closing-Bet365 favourite **227/380 = 59.736842%**. Complete regenerated reports also preserve the all-loaded measurements.
+- Both offline scripts executed through direct file and `python -m` launch modes into temporary directories. Synthetic CSV/checksum and real CSV/measurement JSON are byte-identical to committed artifacts in both modes.
+- Every tracked file under `data/` matches HEAD bytes, including raw source files, sample ticket, generated history, real matches, checksum, and measurements. Package import resolves to `src/`; existing Streamlit/launcher tests pass.
+
+### Remaining concerns and handoff
+
+All nine approved findings are addressed. No change to documented valid-input prediction behavior was required. Invalid inputs now fail explicitly; permitted integral position representations receive consistent numeric ordering. The supported numeric storage limit is representability, not an arbitrary score threshold. Configuration, normalization, datasets, and measured results remain unchanged. The user approved the dedicated Review 3 commit on 2026-10-17 with message `Review error handling and strengthen input validation`. Pre-commit checks again confirmed the exact 14-file scope, whitespace checks, all 220 tests passing (6.24s), unchanged datasets/measurements, and intact earlier planning-log entries. No push, merge, or branch change is authorized.
