@@ -19,7 +19,7 @@
 ## 4. Statistics and Prediction
 
 - [x] 4.1 Implement team-perspective observations and overall/home/away match counts, points per match, and goal-difference per match; verify hand-calculated fixture tests cover wins, draws, losses, and venue splits.
-- [x] 4.2 Implement independent min-max normalization for all six metric series with the neutral 0.5 tied-series rule; verify minimum, maximum, intermediate, and constant-series test cases.
+- [x] 4.2 Implement independent min-max normalization for all six metric series with the neutral 0.5 tied-series rule; verify minimum, maximum, intermediate, and constant-series test cases. **Historical completion:** this original rule was superseded on 2026-10-08 by shared home/away scales per metric; see design decision 5 and the current prediction specification.
 - [x] 4.3 Implement home and away rating composition using the fixed 70/30 metric weights and equal overall/venue weights; verify tests compare ratings with hand-calculated expected values and keep them within zero to one.
 - [x] 4.4 Implement the inclusive ±0.10 draw band and prediction detail results; verify boundary tests produce `1`, `X`, and `2` exactly as specified and include both ratings plus their signed difference.
 - [x] 4.5 Enforce named minimum-history requirements for total and relevant-venue matches; verify tests identify the fixture, team, and failed limit without accessing generator-only information.
@@ -42,3 +42,7 @@
 - [x] 7.2 Run the complete pytest suite under the installed Python 3.13 environment and execute the manual Streamlit smoke test; verify all automated tests pass and record successful completion of every smoke-test step.
 - [x] 7.3 Inspect runtime imports and the end-to-end test to confirm they do not reference `scripts/generate_synthetic_history.py` or hidden strengths, and verify the application operates using only the two committed CSV inputs.
 - [x] 7.4 Make the repository-root Streamlit launcher resolve the `src` package independently of editable-install `.pth` processing; verify the documented activated-environment command starts successfully and add a regression test for an absent editable import path.
+
+## Documentation reconciliation — Homework 6 Review 1 (2026-10-17)
+
+The original task completion record above is retained. The implemented successor to task 4.2 keeps overall PPM/GDPM normalization independent and pools home/away rates per metric, preserving missing values and assigning 0.5 to tied non-missing pools. Existing regression coverage and the measured result are recorded in `docs/home-advantage-investigation.md`. This review updates documentation only; it introduces no implementation or test task.

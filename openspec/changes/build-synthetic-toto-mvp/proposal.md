@@ -31,3 +31,7 @@ None. The project has no existing capability specifications.
 - Adds runtime dependencies on Streamlit, pandas, and NumPy, with pytest as a development dependency, configured through `pyproject.toml`.
 - Establishes CSV and service boundaries intended to support later replacement of synthetic history with real football data without coupling runtime code to generator-only parameters.
 - Does not change the README's broader project direction toward real historical football data.
+
+## Historical scope and subsequent work
+
+This proposal records the original synthetic-data MVP scope. The later user-authorized offline real-data spike and evaluation are completed work outside that original scope; the Streamlit interface still uses synthetic inputs. On 2026-10-08, shared home/away normalization superseded the original independent venue scales. The current rule is documented in design decision 5 and the prediction specification; the original decisions and measurements are retained in `PLANNING_LOG.md` and `docs/home-advantage-investigation.md`. Homework 6 Review 1 reconciles these documents without changing implementation.

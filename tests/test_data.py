@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import pandas as pd
 import pytest
 
 from toto_estimator.data import load_historical_data, load_ticket_data

@@ -1,5 +1,7 @@
 """Fixed, transparent 1/X/2 prediction rules for the MVP."""
 
+from math import isfinite
+
 import pandas as pd
 
 from .config import (
@@ -11,7 +13,7 @@ from .config import (
     POINTS_WEIGHT,
     VENUE_WEIGHT,
 )
-from .models import Prediction, ValidationIssue
+from .models import DataValidationError, Prediction, ValidationIssue
 
 
 def history_issues(
@@ -55,7 +57,18 @@ def history_issues(
     return issues
 
 
+def _require_finite(value: object, label: str) -> None:
+    try:
+        finite = isfinite(value)
+    except (TypeError, ValueError, OverflowError):
+        finite = False
+    if not finite:
+        raise DataValidationError([ValidationIssue("invalid_rating", f"{label} must be a finite number; received {value!r}.")])
+
+
 def _component(statistics: pd.DataFrame, team: str, prefix: str) -> float:
+    for metric in ("ppm", "gdpm"):
+        _require_finite(statistics.at[team, f"{prefix}_{metric}_norm"], f"{team} {prefix} {metric}")
     return float(
         POINTS_WEIGHT * statistics.at[team, f"{prefix}_ppm_norm"]
         + GOAL_DIFFERENCE_WEIGHT * statistics.at[team, f"{prefix}_gdpm_norm"]
@@ -74,10 +87,13 @@ def fixture_ratings(
         + VENUE_WEIGHT * _component(statistics, away_team, "away")
     )
     difference = home_rating - away_rating
+    for label, value in (("home rating", home_rating), ("away rating", away_rating), ("rating difference", difference)):
+        _require_finite(value, label)
     return home_rating, away_rating, difference
 
 
 def outcome_from_difference(difference: float) -> str:
+    _require_finite(difference, "rating difference")
     if difference > DRAW_THRESHOLD:
         return "1"
     if difference < -DRAW_THRESHOLD:

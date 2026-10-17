@@ -12,15 +12,27 @@ The system SHALL derive points per match and goal difference per match for every
 - **THEN** each team has total-match, home-match, and away-match counts plus corresponding points-per-match and goal-difference-per-match values derived only from those matches
 
 ### Requirement: Comparable normalized metrics
-The system SHALL normalize each points-per-match and goal-difference-per-match metric across the teams in the loaded history onto a zero-to-one scale. If all teams have the same value for a metric, every team SHALL receive the neutral normalized value 0.5 for that metric.
+Historical rule: the original September 2026 design normalized all six overall/home/away metric columns independently, with 0.5 for constant columns. The user-authorized rule of 2026-10-08 superseded independent venue scaling. The following requirements describe the current implementation; the original design and decision history remain in `design.md` and `PLANNING_LOG.md`.
 
-#### Scenario: Metric values vary between teams
-- **WHEN** a metric has different minimum and maximum team values
-- **THEN** the minimum maps to 0, the maximum maps to 1, and intermediate values use min-max normalization
+The system SHALL normalize overall points per match (PPM) and overall goal difference per match (GDPM) independently across teams in the supplied history. For each venue metric, it SHALL pool home and away team rates, calculate one minimum and maximum over the non-missing pooled values, and apply that shared min-max scale to both venue columns. In chronological evaluation, statistics and normalization bounds SHALL use only fitting history.
 
-#### Scenario: Metric values are tied for all teams
-- **WHEN** every team has the same value for a metric
-- **THEN** every team receives 0.5 for that normalized metric
+#### Scenario: Values vary within a normalization pool
+- **WHEN** an overall metric series or a pooled home/away metric has different minimum and maximum non-missing values
+- **THEN** the minimum maps to 0, the maximum maps to 1, and intermediate values use `(value - minimum) / (maximum - minimum)`
+- **AND** equal home and away rates map to the same normalized value
+
+#### Scenario: Values are tied within a normalization pool
+- **WHEN** all non-missing values in an overall metric series or pooled home/away metric are equal
+- **THEN** those values receive 0.5
+
+#### Scenario: Home and away columns are individually constant but differ
+- **WHEN** all home rates for a metric equal one value and all away rates equal a different value
+- **THEN** the two columns use the shared pooled range rather than each receiving 0.5
+
+#### Scenario: Venue history is missing
+- **WHEN** a team has no observations at a venue
+- **THEN** its missing venue rates remain missing and are excluded from normalization bounds
+- **AND** the minimum-history requirement still prevents predicting a fixture at that venue
 
 ### Requirement: Transparent team rating
 For a fixture, the system SHALL calculate the home team's rating from its overall and home metrics and the away team's rating from its overall and away metrics. Within both the overall and venue components, normalized points performance SHALL have weight 0.70 and normalized goal-difference performance weight 0.30; the overall and venue components SHALL have equal weight.

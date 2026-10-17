@@ -1,146 +1,143 @@
 """Source-independent loading and validation for public CSV inputs."""
 
+import csv
+import io
+from datetime import date, datetime
 from pathlib import Path
 
 import pandas as pd
 
 from .models import DataValidationError, ValidationIssue
+from .outcomes import outcome_from_goals
+from .validation import exact_integer, frame_issues, team_name
 
-HISTORICAL_COLUMNS = (
-    "season",
-    "date",
-    "home_team",
-    "away_team",
-    "home_goals",
-    "away_goals",
-)
+HISTORICAL_COLUMNS = ("season", "date", "home_team", "away_team", "home_goals", "away_goals")
 TICKET_COLUMNS = ("position", "home_team", "away_team")
 
 
-def _missing_columns(frame: pd.DataFrame, required: tuple[str, ...]) -> list[str]:
-    return [column for column in required if column not in frame.columns]
-
-
 def _read_csv(path: str | Path, input_name: str) -> pd.DataFrame:
+    source = str(path) if isinstance(path, (str, Path)) else input_name
     try:
-        return pd.read_csv(path, dtype=object, keep_default_na=False)
-    except (OSError, pd.errors.ParserError) as exc:
-        raise DataValidationError(
-            [ValidationIssue("read_error", f"Could not read {input_name}: {exc}")]
-        ) from exc
+        if not isinstance(path, (str, Path)) and not callable(getattr(path, "read", None)):
+            raise DataValidationError([ValidationIssue("invalid_type", f"{input_name} must be a path or readable CSV stream.")])
+        content = Path(path).read_bytes() if isinstance(path, (str, Path)) else path.read()
+        if isinstance(content, bytes):
+            content = content.decode("utf-8-sig")
+        if not isinstance(content, str):
+            raise DataValidationError([ValidationIssue("invalid_type", f"{input_name} must provide CSV text.")])
+        reader = csv.reader(io.StringIO(content, newline=""), strict=True)
+        header = next((row for row in reader if row), None)
+        if header is None:
+            raise DataValidationError([ValidationIssue("empty_data", f"{input_name} ({source}) is empty.")])
+        if len(header) != len(set(header)):
+            raise DataValidationError([ValidationIssue("duplicate_columns", f"{input_name} ({source}) has duplicate column headers.")])
+        rows = []
+        issues = []
+        for row in reader:
+            if not row:
+                continue
+            if len(row) != len(header):
+                issues.append(ValidationIssue("row_width", f"{input_name} ({source}) row {reader.line_num}: expected {len(header)} fields, found {len(row)}.", row=reader.line_num))
+            else:
+                rows.append(row)
+        if issues:
+            raise DataValidationError(issues)
+        return pd.DataFrame(rows, columns=header)
+    except (OSError, UnicodeError, csv.Error) as exc:
+        raise DataValidationError([ValidationIssue("read_error", f"Could not read {input_name} ({source}): {exc}")]) from exc
+
+
+def validate_historical_data(frame: pd.DataFrame) -> pd.DataFrame:
+    """Validate/copy public history from files or direct callers, retaining extra columns."""
+    issues = frame_issues(frame, HISTORICAL_COLUMNS, "Historical data")
+    if issues:
+        raise DataValidationError(issues)
+    if frame.empty:
+        raise DataValidationError([ValidationIssue("empty_data", "Historical data must contain at least one match.")])
+    normalized = frame.copy(deep=True).reset_index(drop=True)
+    dates = []
+    goals = {column: [] for column in ("home_goals", "away_goals")}
+    results = []
+    for index, row in normalized.iterrows():
+        source_row = index + 2
+        names = {}
+        for column in ("home_team", "away_team"):
+            names[column] = team_name(row[column])
+            if not names[column]:
+                issues.append(ValidationIssue(f"blank_{column}", f"{column} at historical row {source_row} must be a nonblank team name string.", row=source_row))
+        if names["home_team"] and names["home_team"] == names["away_team"]:
+            issues.append(ValidationIssue("identical_teams", f"Home and away teams must differ at historical row {source_row}.", row=source_row))
+        for column, name in names.items():
+            normalized.at[index, column] = name
+        value = row["date"]
+        parsed = pd.NaT
+        if isinstance(value, (str, date, datetime, pd.Timestamp)):
+            try:
+                parsed = pd.to_datetime(value, format="%Y-%m-%d", errors="coerce")
+            except (ValueError, TypeError, OverflowError):
+                parsed = pd.NaT
+        if pd.isna(parsed) or getattr(parsed, "tzinfo", None) is not None:
+            issues.append(ValidationIssue("invalid_date", f"Date at historical row {source_row} must use YYYY-MM-DD without a timezone.", row=source_row))
+        dates.append(parsed)
+        for column in goals:
+            try:
+                number = exact_integer(row[column])
+                if number < 0:
+                    raise ValueError("must be non-negative")
+            except ValueError as exc:
+                issues.append(ValidationIssue("invalid_goals", f"{column} at historical row {source_row} {exc}; received {row[column]!r}.", row=source_row))
+                number = None
+            goals[column].append(number)
+        if all(goals[column][-1] is not None for column in goals):
+            result = outcome_from_goals(goals["home_goals"][-1], goals["away_goals"][-1])
+        else:
+            result = None
+        if "result" in normalized.columns:
+            supplied = row["result"]
+            if not isinstance(supplied, str) or supplied not in ("1", "X", "2") or (result is not None and supplied != result):
+                issues.append(ValidationIssue("invalid_outcome", f"result at historical row {source_row} must be 1/X/2 and agree with the goals; received {supplied!r}.", row=source_row))
+        results.append(result)
+    if issues:
+        raise DataValidationError(issues)
+    normalized["season"] = normalized["season"].astype(str).str.strip()
+    normalized["date"] = pd.to_datetime(dates)
+    for column, values in goals.items():
+        normalized[column] = pd.Series(values, dtype="int64")
+    normalized["result"] = results
+    return normalized.sort_values("date", kind="stable").reset_index(drop=True)
 
 
 def load_historical_data(path: str | Path) -> pd.DataFrame:
-    """Load, validate, normalize, and chronologically sort match history."""
+    return validate_historical_data(_read_csv(path, "historical data"))
 
-    frame = _read_csv(path, "historical data")
-    missing = _missing_columns(frame, HISTORICAL_COLUMNS)
-    if missing:
-        raise DataValidationError(
-            [
-                ValidationIssue(
-                    "missing_columns",
-                    f"Historical data is missing required columns: {', '.join(missing)}.",
-                )
-            ]
-        )
 
-    frame = frame.loc[:, HISTORICAL_COLUMNS].copy()
-    issues: list[ValidationIssue] = []
-
-    for index, row in frame.iterrows():
-        csv_row = int(index) + 2
-        home = str(row["home_team"]).strip()
-        away = str(row["away_team"]).strip()
-        if not home:
-            issues.append(
-                ValidationIssue("blank_home_team", "Home team must not be blank.", row=csv_row)
-            )
-        if not away:
-            issues.append(
-                ValidationIssue("blank_away_team", "Away team must not be blank.", row=csv_row)
-            )
-        if home and away and home == away:
-            issues.append(
-                ValidationIssue(
-                    "identical_teams",
-                    f"Home and away teams must differ at historical row {csv_row}.",
-                    row=csv_row,
-                )
-            )
-
-    parsed_dates = pd.to_datetime(frame["date"], format="%Y-%m-%d", errors="coerce")
-    for index in frame.index[parsed_dates.isna()]:
-        csv_row = int(index) + 2
-        issues.append(
-            ValidationIssue(
-                "invalid_date",
-                f"Date at historical row {csv_row} must use YYYY-MM-DD.",
-                row=csv_row,
-            )
-        )
-
-    parsed_goals: dict[str, pd.Series] = {}
-    for column in ("home_goals", "away_goals"):
-        numeric = pd.to_numeric(frame[column], errors="coerce")
-        parsed_goals[column] = numeric
-        invalid = numeric.isna() | (numeric < 0) | (numeric % 1 != 0)
-        for index in frame.index[invalid]:
-            csv_row = int(index) + 2
-            issues.append(
-                ValidationIssue(
-                    "invalid_goals",
-                    f"{column} at historical row {csv_row} must be a non-negative integer.",
-                    row=csv_row,
-                )
-            )
-
+def normalize_ticket(ticket: pd.DataFrame) -> pd.DataFrame:
+    """Copy and normalize names and convertible positions; leave invalid values for diagnostics."""
+    issues = frame_issues(ticket, TICKET_COLUMNS, "Ticket")
     if issues:
         raise DataValidationError(issues)
-
-    frame["season"] = frame["season"].astype(str).str.strip()
-    frame["home_team"] = frame["home_team"].astype(str).str.strip()
-    frame["away_team"] = frame["away_team"].astype(str).str.strip()
-    frame["date"] = parsed_dates
-    frame["home_goals"] = parsed_goals["home_goals"].astype(int)
-    frame["away_goals"] = parsed_goals["away_goals"].astype(int)
-    frame["result"] = "X"
-    frame.loc[frame["home_goals"] > frame["away_goals"], "result"] = "1"
-    frame.loc[frame["home_goals"] < frame["away_goals"], "result"] = "2"
-    return frame.sort_values("date", kind="stable").reset_index(drop=True)
+    normalized = ticket.copy(deep=True).reset_index(drop=True)
+    for column in ("home_team", "away_team"):
+        normalized[column] = normalized[column].map(team_name)
+    positions = []
+    for value in normalized["position"]:
+        try:
+            positions.append(exact_integer(value))
+        except ValueError:
+            positions.append(value)
+    normalized["position"] = pd.Series(positions, dtype=object)
+    return normalized
 
 
 def load_ticket_data(path: str | Path) -> pd.DataFrame:
-    """Load the public ticket schema; complete rules are applied by ticket.py."""
-
-    frame = _read_csv(path, "ticket data")
-    missing = _missing_columns(frame, TICKET_COLUMNS)
-    if missing:
-        raise DataValidationError(
-            [
-                ValidationIssue(
-                    "missing_columns",
-                    f"Ticket data is missing required columns: {', '.join(missing)}.",
-                )
-            ]
-        )
-
-    frame = frame.loc[:, TICKET_COLUMNS].copy()
-    numeric_positions = pd.to_numeric(frame["position"], errors="coerce")
-    invalid = numeric_positions.isna() | (numeric_positions % 1 != 0)
-    if invalid.any():
-        issues = [
-            ValidationIssue(
-                "invalid_position",
-                f"Position at ticket row {int(index) + 2} must be an integer.",
-                row=int(index) + 2,
-            )
-            for index in frame.index[invalid]
-        ]
+    frame = normalize_ticket(_read_csv(path, "ticket data"))
+    issues = []
+    for index, value in enumerate(frame["position"]):
+        try:
+            exact_integer(value)
+        except ValueError as exc:
+            issues.append(ValidationIssue("invalid_position", f"position at ticket row {index + 2} {exc}; received {value!r}.", row=index + 2))
+    if issues:
         raise DataValidationError(issues)
-
-    frame["position"] = numeric_positions.astype(int)
-    frame["home_team"] = frame["home_team"].astype(str).str.strip()
-    frame["away_team"] = frame["away_team"].astype(str).str.strip()
+    frame["position"] = frame["position"].astype("int64")
     return frame
-
