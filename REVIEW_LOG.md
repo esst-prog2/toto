@@ -132,3 +132,49 @@ No broad `except Exception` handler was introduced. Expected conversion/file/par
 ### Remaining concerns and handoff
 
 All nine approved findings are addressed. No change to documented valid-input prediction behavior was required. Invalid inputs now fail explicitly; permitted integral position representations receive consistent numeric ordering. The supported numeric storage limit is representability, not an arbitrary score threshold. Configuration, normalization, datasets, and measured results remain unchanged. The user approved the dedicated Review 3 commit on 2026-10-17 with message `Review error handling and strengthen input validation`. Pre-commit checks again confirmed the exact 14-file scope, whitespace checks, all 220 tests passing (6.24s), unchanged datasets/measurements, and intact earlier planning-log entries. No push, merge, or branch change is authorized.
+
+## Review 4: Dependencies and dead code
+
+Date: 2026-10-17. Branch: `hw6-review`. Status: all four approved findings addressed and verified; user approved the dedicated commit on 2026-10-17.
+
+### Scope and findings
+
+Reviewed all 65 tracked files, including declared/imported dependencies, production/test call sites, public APIs, CLI and pytest discovery entry points, configuration, generated artifacts, and documentation. Static unused-symbol candidates were checked against actual usage rather than deleted automatically. All three original runtime dependencies and pytest remain necessary. No confirmed dead production function/class/module, unreachable block, duplicate dependency, obsolete active configuration, or tracked build/cache artifact was found. Historical data/checksum/measurement artifacts and historical log references remain intentional. The user authorized all four findings below.
+
+| ID | Finding / pre-fix locations | Severity | Fix and impact |
+| --- | --- | --- | --- |
+| 1 | `README.md:73`, `pyproject.toml:26`, `tests/test_artifact_io.py:5`: the pytest executable failed with four `scripts` import collection errors, whereas `python -m pytest` passed. | Medium | Pytest configuration now adds both `src` and `.`. README documents both invocation methods from the repository root. Production import behavior is unchanged. |
+| 2 | Unconstrained runtime/dev dependencies at `pyproject.toml:11,18` did not express required APIs or record an exact tested environment. | Medium | Added justified floors without upper bounds; recorded exact installed versions in `constraints-tested-py313.txt` and the rationale/limits in `docs/dependency-environment.md`. No dependency-management tool or package upgrade/downgrade was introduced. Python metadata remains >=3.11, with explicit untested-compatibility limitations. |
+| 3 | Unused `import pandas as pd` at `tests/test_data.py:3`. | Low | Removed that import only; test logic is unchanged. pandas remains a required project dependency. |
+| 4 | `app.py:130` uses optional pandas styling but `pyproject.toml:11` did not directly declare its Jinja2 requirement. | Low | Verified that installed pandas 3.0.6 requires Jinja2>=3.1.5 in its optional-dependency checker and output-formatting metadata; declared precisely that floor. Installed Jinja2 3.1.6 already satisfies it. No unrelated pandas extras were added. |
+
+### Dependency decisions and exact tested versions
+
+| Package | New declared constraint | Installed/tested version |
+| --- | --- | --- |
+| NumPy | `>=2.1.0` | 2.5.3 |
+| pandas | `>=2.2.3` | 3.0.6 |
+| Streamlit | `>=1.49.0` | 1.64.0 |
+| pytest (development) | `>=8.3.3` | 9.1.1 |
+| Jinja2 | `>=3.1.5` | 3.1.6 |
+
+Tested on CPython 3.13.12, macOS 26.6.2 arm64, with pip 25.3. The complete third-party/tool snapshot includes transitive installed versions; the local project is installed from this checkout. The existing `setuptools>=68` isolated build requirement is unchanged; no exact isolated-build-backend version was captured.
+
+The floors are justified using versioned upstream API/release documentation and package metadata, linked in `docs/dependency-environment.md`. They describe compatibility prerequisites and a chosen baseline, not the earliest possible versions or a fully tested minimum matrix. NumPy 2.1 supports upstream Python 3.10–3.13; pandas 2.2.3 added general Python 3.13 compatibility; Streamlit 1.49 documents the used width APIs; pytest 8.3.3 is a conservative patch baseline after upstream Python 3.13 support. Jinja2's floor comes directly from the installed pandas checker.
+
+### Verification results
+
+- Activated-environment `python -m pytest -q -p no:cacheprovider` with bytecode disabled: **220 passed in 5.96s**.
+- `.venv/bin/pytest -q -p no:cacheprovider` with bytecode disabled: **220 passed in 5.44s**. The previous four collection errors are resolved.
+- `python -m pip check`: **No broken requirements found**. pip disabled its inaccessible external cache and completed successfully; no escalation or environment modification was needed.
+- Independently compared every new declared constraint with installed distribution metadata: all satisfied. This also checks the new Jinja2 declaration, since installed local-project metadata predates this pyproject edit.
+- Every exact snapshot pin matches installed metadata.
+- `git diff --check` passed. The only test-file change is removal of the unused import; no additional test or production dependency was installed.
+- Every tracked production module, script, `app.py`, and file under `data/` matches HEAD bytes. The prediction algorithm, weights, normalization, thresholds, source data, generated datasets, checksums, and evaluation measurements are unchanged. Existing reproducibility tests pass under both invocation methods.
+- Final scope: `pyproject.toml`, `tests/test_data.py`, `README.md`, new `constraints-tested-py313.txt`, new `docs/dependency-environment.md`, `REVIEW_LOG.md`, and append-only `PLANNING_LOG.md`. No unrelated files changed.
+
+### Remaining compatibility limits and handoff
+
+Python 3.11 is not available locally, and no project tests were run under it or against the exact minimum dependency combination. Upstream metadata/runtime support permits 3.11 at the selected floors, but a complete transitive resolution and project-level compatibility remain unverified. The exact Python 3.13 snapshot pins NumPy 2.5.3, which requires Python >=3.12, and must not be applied to 3.11. It is not a universal/hash-locked/build-complete lock file; a constrained fresh installation was not performed. No claim is made about all future dependency/Python releases.
+
+The user approved the dedicated Review 4 commit on 2026-10-17 with message `Review dependencies and improve environment reproducibility`. Pre-commit checks again confirmed the exact seven-file scope, whitespace checks, all 220 tests passing under both invocation methods, unchanged production code/data/measurements, and intact earlier planning-log entries. No push, merge, or branch change is authorized.

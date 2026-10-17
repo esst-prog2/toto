@@ -58,7 +58,7 @@ Future work includes integrating real teams and history into the interactive app
 
 ### Set up and run
 
-Python 3.11 or newer is required. The MVP is developed and verified with Python 3.13.
+Python 3.11 or newer is declared. Review 4 was tested on CPython 3.13.12; Python 3.11 and the minimum dependency combination have not been tested. See the [tested environment and dependency rationale](docs/dependency-environment.md) for exact versions and compatibility limits.
 
 ```bash
 python3 -m venv .venv
@@ -67,11 +67,14 @@ python -m pip install '.[dev]'
 streamlit run app.py
 ```
 
-Run the automated checks with:
+Run the automated checks from the repository root with either command after activating the environment:
 
 ```bash
-pytest
+python -m pytest
+.venv/bin/pytest
 ```
+
+To constrain a comparable Python 3.13 environment to the recorded package versions, use `python -m pip install -c constraints-tested-py313.txt '.[dev]'`. The snapshot is specific to the tested environment; do not use it as a Python 3.11 lock file.
 
 ### Reproduce the fixed history
 

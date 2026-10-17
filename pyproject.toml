@@ -9,13 +9,14 @@ description = "A transparent synthetic-data MVP for 13+1 Toto predictions"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "numpy",
-    "pandas",
-    "streamlit",
+    "numpy>=2.1.0",
+    "pandas>=2.2.3",
+    "streamlit>=1.49.0",
+    "Jinja2>=3.1.5",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest"]
+dev = ["pytest>=8.3.3"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -23,5 +24,5 @@ where = ["src"]
 [tool.pytest.ini_options]
 addopts = "-ra"
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 
