@@ -275,3 +275,7 @@ For a later authorized trial/batch:
 
 Only this document and append-only planning entries are changed by this task.
 No source code, application, predictor, raw data or evaluation results change.
+
+## Bundesliga source decision and implementation (2026-11-05)
+
+The user selected official DFB Datencenter for Bundesliga history, superseding provisional Football-Data/DataHub/OpenFootball acquisition recommendations for this competition. `docs/dfb-bundesliga-collection.md` describes the implemented DFB-only pipeline, 18-/20-team format gates, private cache/provenance, response-bound status reviews and explicit written-authorization gate. Only the six existing bounded sample pages have been processed offline; no complete Bundesliga season, approved archive export or archive-wide network authorization is available. Prediction/training/evaluation integration remains outside scope.
