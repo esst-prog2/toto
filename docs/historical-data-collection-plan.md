@@ -279,3 +279,11 @@ No source code, application, predictor, raw data or evaluation results change.
 ## Bundesliga source decision and implementation (2026-11-05)
 
 The user selected official DFB Datencenter for Bundesliga history, superseding provisional Football-Data/DataHub/OpenFootball acquisition recommendations for this competition. `docs/dfb-bundesliga-collection.md` describes the implemented DFB-only pipeline, 18-/20-team format gates, private cache/provenance, response-bound status reviews and explicit written-authorization gate. Only the six existing bounded sample pages have been processed offline; no complete Bundesliga season, approved archive export or archive-wide network authorization is available. Prediction/training/evaluation integration remains outside scope.
+
+## Latest Bundesliga acquisition decision (2026-11-05)
+
+The user selected direct CSVs for completed Bundesliga history: pinned deadangel33 originals for 1990/91–1992/93 and DataHub originals for 1993/94–2025/26. This supersedes the intervening DFB-only collection plan; preserve its code/experiments. All 36 selected files are now acquired privately (11,090 match records). See `docs/bundesliga-validation.md`: 35 seasons pass the reviewed stage, while 1993/94 retains an unresolved replay-date discrepancy. Independent result verification, an administrative-outcome policy and upstream-rights assessment precede standardization/integration; ongoing 2026/27 is deferred.
+
+## Completed Bundesliga CSV preparation (2026-11-05)
+
+The later review resolved the Bayern–Nürnberg replay date as 1994-05-03; only the derived standardized dataset applies the checksum-bound correction. All 36 seasons and 11,090 source records are preserved, independently sampled and standardized privately, with five match-ID-linked exception records. Full fixture coverage and reproducibility passed. The earlier DFB pipeline remains a separately preserved, permission-gated alternative; no archive-wide DFB collection occurred. Upstream third-party rights and ordinary-training suitability for unreviewed matches remain unresolved. See `docs/bundesliga-validation.md` for the staged history, evidence and current readiness. No model integration, training or evaluation is authorized by this preparation.
