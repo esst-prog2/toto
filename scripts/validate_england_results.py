@@ -22,7 +22,12 @@ AS_OF = date(2026, 11, 5)
 SOURCE = 'https://github.com/seanelvidge/England-football-results'
 
 
-def audit(source):
+def audit(source, *, tier=1, first_year=1992, team_counts=None):
+    """Audit a tier with explicit season scope and expected league sizes.
+
+    Defaults preserve the original Premier League audit. team_counts maps each
+    season start year to its independently specified expected participant count.
+    """
     issues, selected = [], []
     def issue(row, season, code, detail):
         issues.append(dict(source_row=row, season=season, code=code, detail=detail))
@@ -39,7 +44,7 @@ def audit(source):
             if None in row or any(v is None for v in row.values()):
                 raise ValueError(f'malformed CSV row at line {number}')
             try:
-                tier = exact_integer(row['Tier'])
+                source_tier = exact_integer(row['Tier'])
                 season = canonical_season(row['Season'])
                 if not re.fullmatch(r'\d{4}/\d{4}', season):
                     raise ValueError('cross-year season required')
@@ -47,12 +52,12 @@ def audit(source):
             except ValueError as exc:
                 issue(number, row['Season'], 'unclassifiable_source_row', str(exc))
                 continue
-            if tier != 1 or start < 1992:
+            if source_tier != tier or start < first_year:
                 continue
             selected.append((number, row))
             if start > 2026:
                 issue(number, season, 'future_season', 'beyond the requested current season')
-            if row['Season'] != season or row['Tier'] != '1':
+            if row['Season'] != season or row['Tier'] != str(tier):
                 issue(number, season, 'noncanonical_metadata', 'raw season/tier spelling differs from documented format; preserved')
             try:
                 day = date.fromisoformat(row['Date'])
@@ -93,11 +98,11 @@ def audit(source):
         if len(entries) > 1:
             issue(entries[0][0], key[0], 'repeated_ordered_pair', f'{key[1:]} appears {len(entries)} times; rows {[n for n, _ in entries]}')
     summary = []
-    for start in range(1992, 2027):
+    for start in range(first_year, 2027):
         season = f'{start}/{start+1}'
         rows = seasons[season]
         teams = {r[c] for r in rows for c in ('HomeTeam', 'AwayTeam') if r[c].strip()}
-        n = 22 if start <= 1994 else 20
+        n = team_counts[start] if team_counts is not None else (22 if start <= 1994 else 20)
         expected = n * (n - 1)
         ongoing = start == 2026
         if len(teams) != n:

@@ -38,16 +38,25 @@ def digest(content: bytes) -> str:
     return hashlib.sha256(content).hexdigest()
 
 
-def convert_rows(rows: list[dict[str, str]], private_directory: Path) -> tuple[bytes, dict]:
+def convert_rows(
+    rows: list[dict[str, str]], private_directory: Path, *, league=LEAGUE,
+    tier='1', division_names=None,
+) -> tuple[bytes, dict]:
     """Translate only source columns/date syntax, then delegate validation and IDs.
 
     The caller chooses the season partition. Any rejection, duplicate, fixture,
     conflict, or normalization of match facts fails the conversion.
+    Explicit tier/division_names/league arguments support historical names of
+    another competition; defaults retain the Premier League mapping.
     """
+    if not isinstance(league, str) or not league.strip() or league != league.strip():
+        raise ValueError('league must be explicit, nonblank and canonical')
     bridge = []
     for row in rows:
-        if row['Tier'] != '1' or row['Division'] != 'Premier League':
-            raise ValueError('source row is not explicitly Premier League Tier 1')
+        expected_division = (division_names.get(int(row['Season'][:4]))
+                             if division_names is not None else 'Premier League')
+        if row['Tier'] != tier or expected_division is None or row['Division'] != expected_division:
+            raise ValueError('source tier/division does not agree with explicit competition mapping')
         day = date.fromisoformat(row['Date'])
         if day.isoformat() != row['Date']:
             raise ValueError('source date is not canonical ISO date')
@@ -66,7 +75,7 @@ def convert_rows(rows: list[dict[str, str]], private_directory: Path) -> tuple[b
     with TemporaryDirectory(prefix='.standardize-', dir=private_directory) as temp:
         path = Path(temp) / 'import_bridge.csv'
         path.write_bytes(serialize_csv(bridge, BRIDGE_COLUMNS))
-        imported = import_historical_csvs([HistoricalSource(path, LEAGUE)])
+        imported = import_historical_csvs([HistoricalSource(path, league)])
     if imported.issues or imported.summary != dict(
         total=len(rows), accepted=len(rows), rejected=0, duplicates=0, fixtures=0, conflicts=0,
     ):
@@ -76,7 +85,7 @@ def convert_rows(rows: list[dict[str, str]], private_directory: Path) -> tuple[b
         raise ValueError('missing standard field')
     if len({r['match_id'] for r in records}) != len(records):
         raise ValueError('duplicate match IDs')
-    # A completed PL season has each ordered club pairing once, even if dates differ.
+    # These regular-season leagues have each ordered club pairing once, even if dates differ.
     if len({(r['league'], r['season'], r['home_team'], r['away_team']) for r in records}) != len(records):
         raise ValueError('duplicate season home-away fixture')
     expected = Counter((r['Date'], r['Season'], r['HomeTeam'], r['AwayTeam'],
