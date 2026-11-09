@@ -1,98 +1,56 @@
 # Toto Estimator
 
-### 1. The demo
+## 1. The demo
 
-I open the Toto estimator and enter the football matches included in the current week’s Toto. For each match, the program uses historical match data to estimate the outcome. It then displays the predicted outcome for each match as 1, X, or 2. I can see all of the week’s matches and predictions in one table and use them to fill in my Toto ticket.
+I open the Toto Estimator in the browser using the Streamlit application (`app.py`) and manually enter 14 football matches, selecting the competition, home team, and away team for each match. I click **Predict**, and the application displays the recommended 1/X/2 outcome and the estimated probabilities of all three outcomes for each match. It also shows the result of a historical backtest against the teams' most recent previous meeting, including whether the prediction was correct. If a match cannot be evaluated because of missing or insufficient data, the application displays a clear message for that match without affecting the others. All 14 matches, predictions, probabilities, and available backtesting results appear in one table, helping me fill out my Toto ticket.
 
+## 2. The shape
 
-### 2. The shape
+**in** – 14 manually entered football matches, each specifying the competition, home team, and away team.
 
-in     the football matches included in the current week’s Toto
+**out** – A recommended 1/X/2 outcome, the estimated probabilities of all three outcomes, and a historical backtesting result where available. Unsupported matches are clearly marked.
 
-out    a predicted outcome (1, X, or 2) for each match
+**on screen** – The user selects competitions and teams, clicks Predict, and reviews the results in one table. The table shows predictions, probabilities, and whether the method would have correctly predicted the teams' most recent previous meeting.
 
-in between    compare the teams using historical match data and estimate whether the match will result in a home win, draw, or away win
+## 3. The size
 
+### The first useful version will:
 
-### 3. The size
+- Allow manual entry of 14 football matches, including competition and team selection.
+- Use historical results from supported competitions to generate predictions.
+- Display a recommended 1/X/2 outcome and the probabilities of all three possible results.
+- Show whether the prediction method would have correctly predicted the teams' most recent previous meeting, when sufficient historical data are available.
+- Display clear, match-specific messages when predictions or backtests are unavailable, without preventing other matches from being evaluated.
+- Present all results in one readable table.
 
-##### The first useful version will:
-* contain historical football match results from selected leagues and competitions that commonly appear in Toto;
-* use historical match results to predict a home win (1), draw (X), or away win (2) for each match;
-* present the predictions for the selected Toto matches in a simple, readable table.
+### Not this term:
 
-##### Not this term:
-* use individual player data, injuries, suspensions, or team line-ups;
-* predict exact scores;
-* cover every football league and competition.
+- Use individual player statistics, injuries, suspensions, or team line-ups.
+- Predict exact match scores.
+- Automatically download the current weekly Toto ticket.
+- Guarantee coverage of every football league and competition.
+- Allow users to choose between multiple statistical models.
 
+## 4. How we would know it works
 
-### 4. How we would know it works
+Three testable behaviours define functional success:
 
-Functional validation remains necessary: unknown teams and insufficient history must produce clear errors, while valid matches with enough history must produce a 1/X/2 prediction. Returning a valid label alone is not evidence that the prediction method works.
+1. **Valid matches:** Given 14 supported matches with sufficient historical data, the application produces 14 recommended 1/X/2 predictions and three estimated probabilities for each match, adding up to 100%, allowing for rounding.
+2. **Invalid or insufficient data:** Given an unsupported team or competition, or insufficient historical data, the application displays a clear message for that match while continuing to evaluate the other valid matches.
+3. **Historical backtesting:** Given sufficient historical information, the application identifies the teams' most recent previous meeting, displays the actual result and the historical prediction, and correctly reports whether the prediction succeeded, without using information from after that match. If a reliable backtest is impossible, it reports that the comparison is unavailable.
 
-Prediction success will be evaluated chronologically on real football matches that were not used to fit the method. Accuracy on the same held-out matches will be compared explicitly with at least the trivial always-predict-1 baseline and the closing-Bet365 favourite.
+The statistical prediction method is also evaluated chronologically on previously unseen matches, using prediction accuracy, probability quality, and comparison with simple baselines. Historical performance information helps users interpret the recommendations; improved accuracy is not guaranteed.
 
-The real-data spike loaded 1,312 matches; across the loaded dataset, the home-win rate was 44.664634% and the closing-Bet365 favourite won 52.515244%. Statistics were fitted only on 932 matches from the 2022/23 Premier League and Championship and evaluated on the same 380-match 2023/24 Premier League season:
+The previous algorithm achieved 40.00% accuracy, increasing to 41.58% after a normalization adjustment, compared with 46.05% for always predicting a home win and 59.74% for the Bet365 favourite. These are development results, not an independent evaluation of the new method.
 
-| Method | Correct / evaluated | Accuracy |
-| --- | ---: | ---: |
-| Original Homework 4 predictor (independent venue scales) | 152/380 | 40.000000% |
-| Current predictor (shared home/away scales, implemented 2026-10-08) | 158/380 | 41.578947% |
-| Always predict `1` (unchanged baseline) | 175/380 | 46.052632% |
-| Closing-Bet365 favourite (unchanged baseline) | 227/380 | 59.736842% |
+See [Home Advantage Investigation](docs/home-advantage-investigation.md).
 
-The 2023/24 results motivated the normalization correction, so this evaluation dataset was also used during model development. Although its rows never enter statistics or normalization fitting, it is now a development benchmark rather than an independent test of the revised method. A later unseen season is needed for independent confirmation. The current predictor still does not beat either baseline; no claim of prediction success is made. See the [investigation and original/current comparison](docs/home-advantage-investigation.md) and [current measurement artifact](data/real_spike_measurements.json).
+## 5. What could stop this
 
-### 5. What could stop this
+The main risks are obtaining sufficient historical match data, resolving licensing restrictions, and developing a prediction method that provides meaningful estimates. Differences in historical team names, competition structures, and available match histories may also complicate the work.
 
-The main challenge could be finding enough historical match data in a consistent format, especially for older seasons and different competitions. Another challenge will be choosing and developing a prediction method that works well with the available data. The project will use publicly available football match data that can be shown in class; if some years or competitions are not available, the first version will use a smaller dataset.
+Historical results come from publicly accessible football databases and repositories. Some sources have unresolved redistribution rights, so the collected datasets are stored locally rather than published on GitHub.
 
-## Synthetic-data MVP
+If suitable freely redistributable sources cannot be obtained, the public GitHub application may use a smaller demonstration dataset. For the December presentation, screenshots and predictions generated using locally stored historical data may be shown where the applicable data-use conditions permit. Otherwise, the demonstration can use synthetic data.
 
-The Streamlit application runs the complete historical data → prediction logic → 1/X/2 → interface workflow using the fixed synthetic dataset and fictional teams.
-
-Completed offline work includes the Football-Data adapter, three committed real source files, the 1,312-match loader-compatible `data/real_matches.csv`, chronological evaluation against both baselines, and the shared home/away normalization correction. The adapter at `scripts/build_real_spike_dataset.py` reproduces the real dataset and current measurements from the committed source files. It is separate from the synthetic Streamlit workflow.
-
-Future work includes integrating real teams and history into the interactive application, further prediction-method improvement, and independent evaluation on a later unseen season. The offline spike does not provide real-team selection in the current interface.
-
-### Set up and run
-
-Python 3.11 or newer is declared. Review 4 was tested on CPython 3.13.12; Python 3.11 and the minimum dependency combination have not been tested. See the [tested environment and dependency rationale](docs/dependency-environment.md) for exact versions and compatibility limits.
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install '.[dev]'
-streamlit run app.py
-```
-
-Run the automated checks from the repository root with either command after activating the environment:
-
-```bash
-python -m pytest
-.venv/bin/pytest
-```
-
-To constrain a comparable Python 3.13 environment to the recorded package versions, use `python -m pip install -c constraints-tested-py313.txt '.[dev]'`. The snapshot is specific to the tested environment; do not use it as a Python 3.11 lock file.
-
-### Reproduce the fixed history
-
-The application treats `data/historical_matches.csv` as its canonical input. The offline generator owns the synthetic strengths and is never imported or executed by the runtime application or predictor.
-
-To reproduce the dataset into temporary paths without overwriting the canonical files:
-
-```bash
-python scripts/generate_synthetic_history.py --output /tmp/historical_matches.csv --checksum /tmp/historical_matches.sha256
-```
-
-To verify the committed file from the repository root:
-
-```bash
-cd data
-shasum -a 256 -c historical_matches.sha256
-```
-
-The generator uses `Generator(PCG64(20260927))`, base expected goals 1.35, home advantage 0.20, and documented additive expected-goal rates. The predictor normalizes overall PPM and GDPM independently, and uses a shared home/away min-max scale per venue metric. It uses 70% points and 30% goal difference, equal overall and relevant-venue weighting, a ±0.10 inclusive draw band, at least 10 total matches per team, and at least 5 matches at the relevant venue.
-
-See [docs/manual-smoke-test.md](docs/manual-smoke-test.md) for the Streamlit verification checklist.
+The demonstration dataset may produce different predictions and predictive performance from the full historical dataset. If predictive performance is weak, the application documents this limitation rather than claiming unverified accuracy.

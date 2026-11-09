@@ -169,3 +169,6 @@
 
 2026-11-06 — User decided: commit and push completed 2. Bundesliga development on feature/data-collection after privacy review and full tests; exclude all private datasets/evidence and leave unrelated .DS_Store files untouched.
 2026-11-06 — Assistant decided: publish only verification reference URLs/statuses in the report, retain the detailed sample comparison table in existing ignored evidence, and stage only the four second-tier scripts, three test files, validation documentation and planning log.
+
+2026-11-09 — User decided: finalize Homework 8 with the exact approved five-section README, propose competition-aware probabilities, per-match errors and leakage-free previous-meeting backtests through OpenSpec, implement no features, and commit/push documentation on feature/data-collection.
+2026-11-09 — Assistant decided: create finalize-homework-8-demo proposal/design/spec/tasks, explicitly distinguish future scope from the synthetic atomic deterministic MVP, keep implementation tasks unchecked, and preserve all code, datasets and licensing restrictions.
