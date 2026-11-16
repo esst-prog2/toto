@@ -24,7 +24,7 @@ The current Streamlit app is launched locally with `streamlit run app.py`. It of
 
 The current demo uses fixed synthetic history and sample teams. Ratings combine average points and goal difference with overall and venue-specific performance; a fixed comparison rule chooses 1, X or 2. The current UI does not provide outcome probabilities, backtesting or integrated private league archives. There is no verified online application URL or real-world accuracy claim.
 
-Do not modify the application, prediction algorithm, data collection or datasets. Keep private artifacts unpublished. The current authorized step is a design brief, not implementation, generate, critique or deployment. No push is authorized for this step.
+Do not modify the application, prediction algorithm, data collection or datasets. Keep private artifacts unpublished. The current authorized step is three separate static HTML/CSS comparison variants using Impeccable generate. The user will choose the final variant; no critique, publication or push is authorized for this step.
 
 ## Brand Commitments
 
@@ -40,4 +40,4 @@ The user requires a responsive single page, accessible colors, strong hierarchy 
 
 ## Open Implementation Choices
 
-The promotional site's framework, precise typeface, font delivery and final implementation path remain undecided. The broader Homework 9 objective names GitHub Pages as the eventual publication target; publication is a later step. This product record does not set a design or build-workflow default.
+The user selected simple static HTML/CSS suitable for GitHub Pages. The comparison variants use the brief’s system sans-serif direction with no external font dependency. The final visual variant remains the user’s choice. The broader Homework 9 objective names GitHub Pages as the eventual publication target; publication is a later step. This product record does not set a design or build-workflow default.

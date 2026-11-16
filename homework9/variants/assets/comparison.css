@@ -1,0 +1,31 @@
+* { box-sizing: border-box; }
+:root { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #132b24; background: #f6f7f2; color-scheme: light; }
+body { margin: 0; line-height: 1.6; font-size: 17px; }
+::selection { background: #14563f; color: white; }
+:focus-visible { outline: 3px solid #14563f; outline-offset: 5px; }
+a, a:visited { color: #14563f; text-underline-offset: .2em; }
+a:hover { text-decoration-thickness: 2px; }
+.skip { position: absolute; top: -100px; left: 1rem; padding: 1rem; background: white; }
+.skip:focus { top: .5rem; }
+.comparison-intro, .previews, .comparison-footer { width: min(1500px,calc(100% - 64px)); margin-inline: auto; }
+.comparison-intro { padding-block: 2rem 2.5rem; }
+.wordmark { font-size: 1.2rem; font-weight: 700; margin-block: 0 3rem; }
+h1 { font-size: clamp(2.5rem,5vw,4.5rem); line-height: 1.07; letter-spacing: -.03em; margin: 0 0 1.5rem; }
+p { max-width: 70ch; }
+fieldset { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; border: 1px solid #52645b; border-radius: 8px; padding: .5rem 1rem; margin-top: 1.5rem; width: fit-content; }
+legend { font-size: .95rem; padding-inline: .3rem; }
+label { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; cursor: pointer; }
+input { accent-color: #14563f; width: 18px; height: 18px; }
+.previews { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1.5rem; align-items: start; }
+.preview { min-width: 0; border: 1px solid #52645b; border-radius: 12px; overflow: hidden; background: white; }
+.preview-info { padding: 1.5rem; }
+h2 { margin: 0; font-size: 1.3rem; letter-spacing: -.02em; line-height: 1.2; }
+.preview-info p { min-height: 5em; color: #52645b; }
+.preview-info a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
+iframe { display: block; border: 0; border-top: 1px solid #52645b; width: 100%; height: 660px; background: #f6f7f2; }
+body:has(#wide:checked) .previews { grid-template-columns: 1fr; max-width: 1200px; }
+body:has(#wide:checked) .preview-info p { min-height: 0; }
+body:has(#wide:checked) iframe { height: 800px; }
+.comparison-footer { padding-block: 2rem; font-size: .95rem; color: #52645b; }
+@media (max-width: 1000px) { .previews { grid-template-columns: 1fr; max-width: 720px; } .preview-info p { min-height: 0; } }
+@media (max-width: 600px) { body { font-size: 16px; } .comparison-intro,.previews,.comparison-footer { width: calc(100% - 32px); } .wordmark { margin-bottom: 2rem; } .preview-info { padding: 1.2rem; } }

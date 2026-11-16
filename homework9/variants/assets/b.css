@@ -1,0 +1,35 @@
+/* B — Touchline: accent color carries the opening and the close. */
+.theme-b .opening, .theme-b .hero-band { color: white; background: #14563f; }
+.theme-b .opening a:not(.button), .theme-b .hero-band a:not(.button), .theme-b .opening a:not(.button):visited, .theme-b .hero-band a:not(.button):visited { color: white; }
+.theme-b .site-header { border-bottom: 1px solid #91b09e; }
+.theme-b .hero { text-align: center; padding-block: 4.5rem 4.5rem; }
+.theme-b .hero h1 { max-width: 15ch; margin-inline: auto; }
+.theme-b .lead, .theme-b .hero-detail, .theme-b .notice { margin-inline: auto; }
+.theme-b .actions { justify-content: center; }
+.theme-b .notice, .theme-b .notice strong { color: white; }
+.theme-b .button, .theme-b .button:visited { color: #14563f; background: white; border-color: white; }
+.theme-b .button:focus-visible { outline-color: white; }
+.theme-b .button:hover { color: #132b24; background: #f6f7f2; }
+.theme-b .pitch-mark { border-color: #91b09e; width: 180px; height: 180px; top: 6rem; right: -35px; border-radius: 90px 0 0 90px; }
+.theme-b .pitch-mark::after { background: #91b09e; }
+.theme-b .hero { overflow: hidden; }
+.theme-b .content { width: min(820px,calc(100% - 96px)); }
+.theme-b .audience { border-top: 0; }
+.theme-b .section h2 { max-width: 25ch; }
+.theme-b .method-list li { grid-template-columns: 4rem minmax(0,1fr); padding-block: 1.75rem; }
+.theme-b .method-list li::before { font-size: 2.3rem; }
+.theme-b .outcomes { justify-content: space-between; padding-block: 1.6rem; border-top: 1px solid #c4cec5; border-bottom: 1px solid #c4cec5; }
+.theme-b .setup-panels { grid-template-columns: 1fr; }
+.theme-b .command-panel { border-radius: 0; padding: 1.5rem 1.75rem; }
+.theme-b .closing { padding: 2.5rem; margin-block: 1rem 3rem; border: 0; background: #14563f; color: white; }
+.theme-b .closing .text-link, .theme-b .closing .text-link:visited { color: white; }
+@media (max-width: 700px) {
+ .theme-b .content { width: calc(100% - 40px); }
+ .theme-b .hero { text-align: left; padding-block: 2.5rem 3rem; }
+ .theme-b .hero h1 { margin-inline: 0; }
+ .theme-b .actions { justify-content: flex-start; }
+ .theme-b .pitch-mark { width: 100px; height: 100px; top: 2rem; right: -30px; }
+ .theme-b .method-list li { grid-template-columns: 2rem minmax(0,1fr); gap: .6rem; }
+ .theme-b .method-list li::before { font-size: 1.5rem; }
+ .theme-b .closing { padding: 1.5rem; }
+}

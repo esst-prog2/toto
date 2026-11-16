@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Explore TOTOdology’s transparent 13+1 football prediction demo, its synthetic-data limitations, and how to run it locally.">
+<title>TOTOdology — Football predictions you can follow</title>
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="../assets/a.css">
+</head>
+<body>
+<div class="promo-page theme-a">
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="opening">
+    <header class="site-header wrap">
+      <a class="brand" href="#introduction" aria-label="TOTOdology introduction">TOTO<span>dology</span></a>
+      <nav aria-label="Page navigation"><a href="#method">How it works</a><a href="#try-it">Try it</a><a href="https://github.com/esst-prog2/toto">GitHub</a></nav>
+    </header>
+  </div>
+  <main class="page-main" id="main" tabindex="-1">
+  <div class="hero-band">
+    <section class="hero wrap" id="introduction" aria-labelledby="page-title">
+      <div class="pitch-mark" aria-hidden="true"></div>
+      <h1 id="page-title">Football predictions you can follow.</h1>
+      <p class="lead">Choosing outcomes for a 14-match football ticket means comparing many pairs of teams. TOTOdology brings those picks into one place and makes the reasoning visible.</p>
+      <p class="hero-detail">Explore how football results can become a 1/X/2 prediction. Build a 13+1 match ticket in the current demo and see the simple rating rules behind every pick.</p>
+      <div class="actions"><a class="button" href="#try-it">Try the local demo</a><a class="text-link" href="https://github.com/esst-prog2/toto">Explore the code</a></div>
+      <p class="notice"><strong>A synthetic-data demo.</strong> The demo uses synthetic football results and sample teams. It is an educational prototype with no verified real-world accuracy claim.</p>
+    </section>
+  </div>
+  <div class="content wrap">
+    <section class="section audience" id="audience" aria-labelledby="audience-title">
+      <h2 id="audience-title">Curious about the reasoning behind a prediction?</h2>
+      <div class="section-copy"><p>TOTOdology is for football fans curious about Toto-style tickets, and learners who want to explore a transparent approach to football statistics. It brings 14 match picks into one table and lets you inspect the ratings behind them.</p><p>You can start with the prefilled sample ticket, choose different home and away teams from the demo’s lists, and compare the resulting predictions.</p></div>
+    </section>
+    <section class="section method" id="method" aria-labelledby="method-title">
+      <div class="section-title"><h2 id="method-title">From results to a clear pick</h2><p class="topic">How predictions work</p></div>
+      <ol class="method-list">
+        <li><div><h3>Look at team performance.</h3><p>The program calculates average points per match and average goal difference: goals scored minus goals conceded.</p></div></li>
+        <li><div><h3>Include home and away records.</h3><p>Each team’s rating combines its overall record with its record at the relevant venue: home for the host, away for the visitor.</p></div></li>
+        <li><div><h3>Compare the ratings.</h3><p>When the ratings are close, the rule selects <strong>X</strong> (draw). With a larger gap, it selects <strong>1</strong> (home win) if the home rating is higher, or <strong>2</strong> (away win) if the away rating is higher.</p></div></li>
+      </ol>
+      <p class="method-note">Click <strong>Generate predictions</strong> to see all 14 picks. Open <strong>Show rating details</strong> to inspect the home rating, away rating and their difference.</p>
+      <dl class="outcomes" aria-label="Outcome notation"><div><dt>1</dt><dd>Home win</dd></div><div><dt>X</dt><dd>Draw</dd></div><div><dt>2</dt><dd>Away win</dd></div></dl>
+    </section>
+    <section class="section setup" id="try-it" aria-labelledby="setup-title" tabindex="-1">
+      <h2 id="setup-title">Run the demo on your computer</h2>
+      <p class="setup-intro">Get the project from <a href="https://github.com/esst-prog2/toto">GitHub</a>. You’ll need <strong>Python 3.11 or later</strong>. From the downloaded repository’s root folder, create and activate a virtual environment, install the project, and start Streamlit.</p>
+      <div class="setup-panels">
+        <div class="command-panel"><h3 id="mac-title">macOS or Linux</h3><pre tabindex="0" aria-labelledby="mac-title"><code>python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install .
+streamlit run app.py</code></pre></div>
+        <div class="command-panel"><h3 id="windows-title">Windows · PowerShell</h3><pre tabindex="0" aria-labelledby="windows-title"><code>py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install .
+streamlit run app.py</code></pre></div>
+      </div>
+      <p class="setup-outro">Open the local address printed by Streamlit. Keep the sample ticket or edit the team selections, then click <strong>Generate predictions</strong>. If the ticket has an invalid selection, fix the reported issue and try again.</p>
+      <a class="text-link" href="https://github.com/esst-prog2/toto">Explore TOTOdology on GitHub</a>
+    </section>
+    <section class="section closing" id="expectations" aria-labelledby="expectations-title">
+      <h2 id="expectations-title">A small demo with visible reasoning</h2>
+      <div class="section-copy"><p>The current application runs locally with fixed synthetic history. It shows outcome picks and rating details. Its rules are designed to be understandable; they do not establish reliable betting performance or guarantee results.</p><a class="text-link" href="https://github.com/esst-prog2/toto">Explore the project</a></div>
+    </section>
+  </div>
+  </main>
+  <footer class="site-footer wrap"><p>TOTOdology · Football, with the reasoning in view.</p><a href="#introduction">Back to top</a></footer>
+</div>
+</body>
+</html>

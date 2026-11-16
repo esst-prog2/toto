@@ -1,0 +1,35 @@
+/* C — Playbook: navigation rail and compact reading column. */
+.theme-c { width: min(1400px,100%); margin-inline: auto; display: grid; grid-template-columns: 245px minmax(0,1fr); }
+.theme-c .opening { display: contents; }
+.theme-c .site-header { grid-column: 1; grid-row: 1 / 4; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; padding: 3.2rem 2rem; width: 100%; border-right: 1px solid #c4cec5; }
+.theme-c .page-main { grid-column: 2; grid-row: 1; min-width: 0; }
+.theme-c nav { flex-direction: column; gap: .25rem; margin-top: 2.5rem; }
+.theme-c .hero, .theme-c .content, .theme-c .site-footer { grid-column: 2; width: min(850px,calc(100% - 96px)); }
+.theme-c .hero { padding-block: 3.4rem 3.25rem; }
+.theme-c h1 { font-size: clamp(2.6rem,5vw,4.5rem); max-width: 15ch; }
+.theme-c .hero-detail { max-width: 52ch; }
+.theme-c .pitch-mark { width: 90px; height: 90px; top: 2.3rem; right: 0; }
+.theme-c .section { padding-block: 3rem; }
+.theme-c h2 { font-size: clamp(1.8rem,3vw,2.2rem); max-width: 26ch; }
+.theme-c .method-list li { grid-template-columns: 2rem minmax(0,1fr); }
+.theme-c .method-list li::before { font-size: 1.2rem; }
+.theme-c .outcomes { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .5rem; padding-block: 1.25rem; border-top: 1px solid #c4cec5; }
+.theme-c .outcomes div { display: block; }
+.theme-c .outcomes dt { margin-bottom: .65rem; }
+.theme-c .setup-panels { grid-template-columns: 1fr; gap: 1rem; }
+.theme-c .command-panel { background: #eef1e8; border-radius: 8px; padding: 1.35rem; }
+.theme-c .closing { border-bottom: 1px solid #c4cec5; }
+.theme-c .site-footer { border-top: 0; padding-top: 1.5rem; }
+@media (max-width: 1000px) {
+ .theme-c { display: block; }
+ .theme-c .site-header { border: 0; width: calc(100% - 48px); margin-inline: auto; padding: 1.3rem 0; flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+ .theme-c nav { flex-direction: row; margin-top: 0; gap: .25rem 1rem; }
+ .theme-c .hero, .theme-c .content, .theme-c .site-footer { width: min(850px,calc(100% - 48px)); }
+}
+@media (max-width: 700px) {
+ .theme-c .site-header { width: calc(100% - 40px); align-items: flex-start; flex-direction: column; }
+ .theme-c .hero, .theme-c .content, .theme-c .site-footer { width: calc(100% - 40px); }
+ .theme-c .hero { padding-block: 2rem 2.75rem; }
+ .theme-c .section { padding-block: 2.75rem; }
+ .theme-c .pitch-mark { top: .75rem; width: 70px; height: 70px; }
+}

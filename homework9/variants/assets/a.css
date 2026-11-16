@@ -1,0 +1,19 @@
+/* A — Match Programme: hierarchy and editorial scale. */
+.theme-a .hero { padding-block: 4.75rem 4.5rem; }
+.theme-a .hero h1 { max-width: 13ch; }
+.theme-a .pitch-mark { width: 290px; height: 290px; right: 0; top: 5rem; }
+.theme-a .audience { display: grid; grid-template-columns: .9fr 1.1fr; gap: 4rem; }
+.theme-a .audience h2 { margin: 0; max-width: 14ch; }
+.theme-a .method { display: grid; grid-template-columns: .9fr 1.1fr; gap: 0 4rem; }
+.theme-a .method .section-title { grid-row: 1 / 4; }
+.theme-a .method .method-list, .theme-a .method .method-note, .theme-a .method .outcomes { grid-column: 2; }
+.theme-a .method-list li:first-child { border-top: 0; padding-top: 0; }
+.theme-a .closing { display: grid; grid-template-columns: .9fr 1.1fr; gap: 4rem; }
+.theme-a .closing h2 { margin: 0; }
+@media (max-width: 800px) {
+ .theme-a .hero { padding-block: 2.5rem 3rem; }
+ .theme-a .pitch-mark { width: 110px; height: 110px; top: 1rem; }
+ .theme-a .audience, .theme-a .method, .theme-a .closing { display: block; }
+ .theme-a .audience h2, .theme-a .closing h2 { margin-bottom: 1.5rem; }
+ .theme-a .audience h2 { max-width: 24ch; }
+}
