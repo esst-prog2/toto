@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Project-scoped environment for the official tool launchers. No global exports.
+set -euo pipefail
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$root"
+export PATH="$root/.hw9-tools/bin:$PATH"
+export GSTACK_STATE_ROOT="$root/.hw9-tools/gstack-state"
+export BUN_INSTALL_CACHE_DIR="$root/.hw9-tools/bun-cache"
+export IMPECCABLE_HOME="$root/.hw9-tools/impeccable"
+export GSTACK_SKIP_COREUTILS=1
+case "${1:-}" in
+  impeccable) shift; exec "$root/.agents/skills/impeccable/scripts/impeccable" "$@" ;;
+  gstack)
+    shift
+    helper="${1:-}"
+    case "$helper" in setup|bin/*) ;; *) echo 'Use: hw9-tool gstack setup|bin/<helper> [arguments]' >&2; exit 2 ;; esac
+    case "$helper" in *..*) echo 'Parent paths are not allowed' >&2; exit 2 ;; esac
+    shift
+    exec "$root/.agents/skills/gstack/$helper" "$@"
+    ;;
+  bun) shift; exec "$root/.hw9-tools/bin/bun" "$@" ;;
+  *) echo 'Use: scripts/hw9-tool impeccable|gstack|bun [arguments]' >&2; exit 2 ;;
+esac

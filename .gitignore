@@ -6,3 +6,9 @@ __pycache__/
 /build/
 
 /data/private/
+
+# Homework 9: project-local third-party runtimes, skills and state
+/.hw9-tools/
+/.agents/skills/gstack/
+/.agents/skills/gstack-*
+/.agents/skills/impeccable/
