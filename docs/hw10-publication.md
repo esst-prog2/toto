@@ -25,3 +25,17 @@ Interactive foreground Chrome CUA failed once with browser access host unavailab
 ## Public deployment
 
 Pending until the pushed deployment and live page/video are actually verified. Results will be appended after deployment; a successful push is not publication evidence.
+
+
+## Public publication and playback verified — 2026-11-21
+
+- Website: https://esst-prog2.github.io/toto/ (video anchor #concept-film).
+- Direct video: https://esst-prog2.github.io/toto/assets/the-pick-sheet-the-last-box-concept.mp4 .
+- Main Homework 10 commit c5a57e4a4e4a5ebf8add9f788db2222a03e5fb33 was pushed to origin/hw9-promo. GitHub Pages run https://github.com/esst-prog2/toto/actions/runs/44936977293 completed successfully for that source.
+- Independent public requests verified HTTP200 and exact current-source bytes for the HTML, all three stylesheets, logo, poster and approved MP4. MP4 Content-Type video/mp4, 1,809,970 bytes and approved SHA-256 match. A public bytes=1000-1999 request returned206 with exact expected bytes. In-page link targets resolve; all navigation/other existing content remains intact.
+- Chrome Headless Shell tested fetched exact live HTML via QA srcdoc frames, with the deployed public URL as the base, so CSS/logo/poster/MP4 were loaded from actual public asset URLs. Desktop viewport1440: video1160×652.5, page width1440, duration30, media clock advanced to0.3977s, readyState4. Mobile viewport390: video350×196.875, page width390, duration30, media clock advanced to0.4049s, readyState4. These are real muted video.play() media-clock advances, not poster-only checks. Both screenshot/metric results were inspected. No horizontal overflow; 16:9 preserved.
+- Separate Chrome video-element snapshots loaded/sought the actual public MP4 at0,15,29.8s; inspected beginning/middle/end contact sheet confirms the correct approved film, including concept disclosure and ending logo/address. Screenshot evidence and method/HTTP results are saved in homework10/evidence/.
+- Interactive CUA Chrome host was unavailable, so no foreground manual session or physical-phone test is claimed. The user's prior manual approval and these automated headless-public-asset checks are distinct evidence.
+- Publication record/source-whitespace follow-up does not alter approved site/media or trigger a redeploy; deployed page bytes remain those verified above. Vendored GSAP changes remove only comment trailing whitespace/EOF blank line; source-generator normalization preserves this on rebuild. Final diff whitespace check passes.
+- No data-collection working files, application/model/data, repository/package names or unrelated project files were modified. No merge or branch deletion. Existing untracked homework9/.DS_Store remains untouched and excluded. Generated HyperFrames state and tools/private data were excluded from commits.
+- Remaining: submit the public page URL in the required course channel, with repository/branch/PROCESS.md/video evidence if the rubric requests it. Exact portal/deadline requirements are not present in the project; no course submission is claimed.

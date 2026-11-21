@@ -1,0 +1,69 @@
+{
+  "page": "https://esst-prog2.github.io/toto/",
+  "video": "https://esst-prog2.github.io/toto/assets/the-pick-sheet-the-last-box-concept.mp4",
+  "deployment_run": "https://github.com/esst-prog2/toto/actions/runs/44936977293",
+  "deployed_source": "c5a57e4a4e4a5ebf8add9f788db2222a03e5fb33",
+  "http": {
+    "variants/assets/base.css": {
+      "status": 200,
+      "mime": "text/css; charset=utf-8",
+      "bytes": 6081,
+      "sha256": "25883ad0609dd673e2e8040c5fe6b0b2a357dc68534a8bb791a394e6687d42ec"
+    },
+    "variants/assets/a.css": {
+      "status": 200,
+      "mime": "text/css; charset=utf-8",
+      "bytes": 1136,
+      "sha256": "733b99c8c9c7e08dbe3537938b7ff0ea633bfd866ca1f15b7abfaf81a72481c7"
+    },
+    "assets/brand.css": {
+      "status": 200,
+      "mime": "text/css; charset=utf-8",
+      "bytes": 1940,
+      "sha256": "bc117967ebbbb7e5c44ac9eb4788b582a856e6f63b0cf1714a389f8967c93ed7"
+    },
+    "assets/the-pick-sheet-logo.png": {
+      "status": 200,
+      "mime": "image/png",
+      "bytes": 181163,
+      "sha256": "a115a1478bd71e74bdf3ea807f13c7c5eeee975b3ddc97f9bdefa1a17cb5a058"
+    },
+    "assets/the-pick-sheet-concept-poster.jpg": {
+      "status": 200,
+      "mime": "image/jpeg",
+      "bytes": 56676,
+      "sha256": "6308b6a92ecf36a68791ceaa62346f778c4ea51e757f04c7ec851a81835f5cbe"
+    },
+    "assets/the-pick-sheet-the-last-box-concept.mp4": {
+      "status": 200,
+      "mime": "video/mp4",
+      "bytes": 1809970,
+      "sha256": "8c57298d61efcc4c5aa556837d6a813f53ba7ee91900fcb059408be1493aeb43"
+    },
+    "range_status": 206
+  },
+  "chrome_method": "HyperFrames Chrome Headless Shell rendered fetched exact live HTML in same-origin srcdoc QA frames with a base URL pointing at the deployed public site; all CSS/logo/poster/video requests used the public URLs. Native video.play() advanced media time before snapshot readiness. Separate Chrome snapshots sought the public MP4 at 0,15,29.8 seconds. Interactive foreground Chrome CUA was unavailable.",
+  "observed_metrics_from_captures": [
+    {
+      "viewport": 1440,
+      "videoWidth": 1160,
+      "videoHeight": 652.5,
+      "documentWidth": 1440,
+      "duration": 30,
+      "playbackAdvancedTo": 0.3977,
+      "readyState": 4,
+      "ok": true
+    },
+    {
+      "viewport": 390,
+      "videoWidth": 350,
+      "videoHeight": 196.875,
+      "documentWidth": 390,
+      "duration": 30,
+      "playbackAdvancedTo": 0.4049,
+      "readyState": 4,
+      "ok": true
+    }
+  ],
+  "limitations": "Automated headless browser checks, not a physical mobile device or foreground user-click playback test."
+}

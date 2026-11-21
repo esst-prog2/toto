@@ -48,5 +48,8 @@
     ]
   },
   "review_url": "http://127.0.0.1:8770/review/",
-  "status": "User approved; embedding and public verification in progress"
+  "status": "User approved; embedded and publicly verified",
+  "public_page": "https://esst-prog2.github.io/toto/",
+  "public_video": "https://esst-prog2.github.io/toto/assets/the-pick-sheet-the-last-box-concept.mp4",
+  "deployment_run": "https://github.com/esst-prog2/toto/actions/runs/44936977293"
 }

@@ -4,6 +4,8 @@ import shutil,json
 p=Path('homework10/last-box'); (p/'assets').mkdir(exist_ok=True); (p/'compositions').mkdir(exist_ok=True)
 shutil.copyfile('homework9/assets/the-pick-sheet-logo.png',p/'assets/logo.png')
 shutil.copyfile('.hw9-tools/hw10/render-smoke/assets/gsap.min.js',p/'assets/gsap.min.js')
+gsap_asset=p/'assets/gsap.min.js'
+gsap_asset.write_text('\n'.join(line.rstrip() for line in gsap_asset.read_text().splitlines()).rstrip()+'\n')
 G='#005239';Y='#ffcc00';P='#faf9f3';I='#142d24';M='#506459';L='#b6c7bb'
 def text(x,y,s,size=40,fill=I,weight=400,extra=''):
  return f'<text x="{x}" y="{y}" font-size="{size}" font-weight="{weight}" fill="{fill}" {extra}>{escape(s)}</text>'
