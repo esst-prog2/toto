@@ -10,3 +10,35 @@
 The final column records the user's decisions. Technical installation choices and
 limitations are recorded separately in [the environment notes](docs/hw9-environment.md)
 and PLANNING_LOG.md. Later content/design decisions must come from the user.
+
+## Content revision — 2026-11-21
+
+| Step | What the tool did | What I decided |
+|---|---|---|
+| 5 — Vision and prototype content revision (review pending) | Read both README copies, planning decisions, Homework 8 design/spec/tasks, existing Homework 9 documents and app/service code; revised identical English copy across A/B/C, retained CSS and five sections, aligned content/design/product/gallery notes. Verification and Chrome preview results are recorded below. No model, app or data changed. | I requested the latest agreed product vision with clear planned/current boundaries, Chrome-only browser reviews, preserved variants and no final selection, commit, push or deployment before review. |
+
+Verification: all three candidate documents have identical text, five sections, one main heading, unique IDs, valid in-page links and existing local stylesheets. Gallery and A/B/C HTTP responses return 200 and exactly match revised files; git diff --check passes. CSS is unchanged. Chrome launch failed because the computer-use native pipe and browser access host are unavailable; no Safari fallback was used. Chrome rendering, screenshots and responsive visual review remain unverified. User review and final variant selection remain pending; no commit, push or deployment.
+
+## Selected design and identity — 2026-11-21
+
+| Step | What the tool did | What I decided |
+|---|---|---|
+| 6 — The Pick Sheet identity (approval pending) | Created a local review entry from A, preserved five sections and existing typography/layout, added scoped green/yellow/off-white branding and a transparent logo asset, updated public HTML names/title/metadata and content/product documentation. No application/package/repository identifiers changed. Checks and critique limitations are documented separately. | I selected A — Match Programme, the public name The Pick Sheet and my supplied green/yellow logo; requested Chrome-only review and Impeccable critique; no commit, push or deployment until approval. |
+
+Step 6 verification: `docs/hw9-final-design.md` records asset provenance/prompt, final palette, responsive source rules, passing HTML/link/HTTP checks and measured 6.02–13.92:1 text/action contrast ratios. The selected root page and A are served successfully. Chrome native/tab connections failed, so rendered responsive review is unverified. Impeccable context and target slug ran; full critique awaits the skill-required subagent permission response. No detector, independent review or browser score is claimed. No commit, push or deployment.
+
+Step 6 follow-up: user authorized two independent critique agents. A completed before B detector findings entered synthesis. Source-based subtotal 18/24; no rendered score. Detector ran once and returned six warnings (five unconfirmed spacing, one intentional off-white palette). Two P2 copy suggestions: novice acquisition handoff and retained Toto Estimator launch title. Chrome tab creation again failed (browser access host unavailable); desktop/mobile render, zoom, keyboard behavior and overlay remain unverified. Critique delivered in chat and archived with the official storage helper. No site changes, commit, push or deployment during this review.
+
+## Reviewer copy corrections — 2026-11-21
+
+| Step | What the tool did | What I decided |
+|---|---|---|
+| 7 — Beginner setup and prototype title | Clarified ZIP download/extraction and terminal folder setup, used environment-specific Python commands without activation, explained the retained Toto Estimator app title and Ctrl+C shutdown, and aligned final/A/B/C copy and documentation. Static checks and exact-content HTTP 200 checks passed; no installation or Windows execution was performed. Chrome was attempted once and failed (browser access host unavailable); desktop/mobile visual review remains unverified. Manual Chrome steps and submission prerequisites are recorded in docs/hw9-final-design.md. | I requested both reviewer corrections, English-only communication, preservation of approved A design/branding and truthful planned/current functionality; no repeated browser failures and no commit, push or deployment before my review. |
+
+## Final approval and publication — 2026-11-21
+
+| Step | What the tool did | What I decided |
+|---|---|---|
+| 8 — Approved site finalization | Preserved selected Variant A, The Pick Sheet branding and corrected copy; prepared a branch-scoped GitHub Actions workflow that publishes only index.html, the approved logo and required CSS, excluding the application, data and comparison pages. Checks, push and actual publication results follow below. | I manually reviewed and approved the finished page and authorized commit/push of hw9-promo and GitHub Pages publication; no merge, branch deletion, unrelated worktree changes or Homework 10 work. |
+
+Finalization checks: approved HTML has five sections, one main heading, valid fragment targets, logo alt text, accurate planned/current boundaries and no old public product name. An isolated six-file artifact served under /toto/ returned HTTP 200 and exact bytes for index.html, three CSS files and logo; CSS has no undeclared URL dependencies. git diff --check passed. User manual visual approval is recorded; no automated visual pass is invented. GitHub API confirmed admin/push permissions and Actions enabled. Pages was created successfully (HTTP 201) in workflow mode with URL https://esst-prog2.github.io/toto/; the new github-pages environment initially allowed main only, so hw9-promo was added as a specific allowed branch without removing the existing policy. Publication is not yet claimed; push and public verification follow.

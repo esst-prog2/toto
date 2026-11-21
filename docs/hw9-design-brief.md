@@ -1,8 +1,16 @@
 # TOTOdology promotional website: design brief
 
+## Selected direction — 2026-11-21 (current)
+
+The user selected A — Match Programme and the public name The Pick Sheet with the supplied green/yellow logo. The local implementation is at `homework9/index.html`; see [selected design and checks](hw9-final-design.md). This supersedes earlier selection-pending and TOTOdology identity instructions below, which remain historical context. Chrome-only visual review and final implementation approval are still pending. No commit, push or deployment is authorized.
+
 Prepared with the installed Impeccable `shape` workflow on 2026-11-16.
 
 **Status:** Brief prepared for review. The user approved the content structure and selected the modern, professional, football-inspired direction. Specific visual treatments below are design recommendations for the later design step, not a claim that a rendered website has been approved.
+
+## Content revision — 2026-11-21 (current authority)
+
+The user's updated brief supersedes the prototype-only positioning below. Keep the five-section sequence and all three visual designs. Introduction and audience explain the planned product; the three method steps describe manual competition/team entry, historical-data probabilities and the previous meeting. Label this workflow planned, and explain the present synthetic prototype separately beside its setup instructions. Never present the old rating rules as the chosen future statistical model. Keep the opening development notice and the closing model/evaluation/data-rights limitations readable. Browser previews and reviews must use Google Chrome exclusively. The updated `hw9-page-content.md` is the current copy authority; older prose below records the original design context. No invented probability numbers, results, new features or final variant selection.
 
 **Source:** [Approved content structure and draft copy](hw9-page-content.md). Preserve its five sections and factual boundaries; its editorial notes are working evidence, not page content.
 

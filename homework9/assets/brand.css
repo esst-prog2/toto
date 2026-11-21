@@ -1,0 +1,23 @@
+/* The Pick Sheet identity on the selected Match Programme layout. */
+:root { --brand-green: #005239; --brand-yellow: #ffcc00; --brand-paper: #faf9f3; --brand-ink: #142d24; --brand-muted: #506459; color: var(--brand-ink); background: var(--brand-paper); }
+a, a:visited { color: var(--brand-green); }
+::selection { background: var(--brand-yellow); color: var(--brand-ink); }
+:focus-visible { outline: 3px solid var(--brand-green); outline-offset: 5px; }
+.brand { display: inline-flex; align-items: center; min-height: 44px; flex-shrink: 0; }
+.brand-logo { display: block; width: clamp(200px, 22vw, 270px); max-width: 100%; height: auto; }
+.site-header { border-bottom: 1px solid #c9d2c8; padding-block: 1.25rem; }
+.theme-a .hero { border-bottom: 3px solid var(--brand-yellow); }
+.button, .button:visited { color: #fff; background: var(--brand-green); border-color: var(--brand-green); }
+.button:hover { color: #fff; background: #143c2d; border-color: #143c2d; }
+.notice, .site-footer, .section-title .topic { color: var(--brand-muted); }
+.notice strong { color: var(--brand-ink); }
+.method-list li::before, .outcomes dt { color: var(--brand-green); }
+.command-panel { background: #fff; }
+pre { scrollbar-color: var(--brand-green) var(--brand-paper); }
+@media (max-width: 700px) {
+ .brand-logo { width: 215px; }
+ .site-header { gap: .6rem; padding-block: 1rem; }
+}
+@media (prefers-contrast: more) {
+ .site-header, .section, .method-list li, .site-footer { border-color: var(--brand-muted); }
+}

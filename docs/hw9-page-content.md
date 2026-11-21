@@ -1,74 +1,70 @@
-# TOTOdology promotional page: content draft
+# The Pick Sheet promotional page: revised content
 
-Status: Draft for review. Page copy is below; editorial notes are not website copy.
+Status: Revised 2026-11-21 for user review; no final variant selected. Website language remains English. Five sections and A/B/C visual designs are preserved.
 
-## 1. Introduction
+## What was outdated
 
-# TOTOdology
-### Football predictions you can follow.
+The earlier draft made the synthetic MVP the product identity, intentionally omitted the agreed future capabilities, and presented the points/goal-difference rating and draw band as the central product explanation. Those rules describe the prototype, not a selected future probability model. The copy was accurate about the demo but incomplete as a description of the intended product.
 
-Choosing outcomes for a 14-match football ticket means comparing many pairs of teams. TOTOdology brings those picks into one place and makes the reasoning visible.
+## Source authority and verified boundaries
 
-Explore how football results can become a 1/X/2 prediction. Build a 13+1 match ticket in the current demo and see the simple rating rules behind every pick.
+- README sections Demo, Shape, Size and How We Would Know It Works in both worktrees describe the agreed target: 14 manual competition/team selections, historical data, three outcome probabilities, recommendations, one results table and a previous-meeting comparison.
+- `openspec/changes/finalize-homework-8-demo/design.md`, `specs/homework-8-demo/spec.md` and `tasks.md` distinguish this target from delivered functionality. Implementation tasks remain unchecked. Historical reconstruction must use only information available before the previous meeting, including fitting and parameter selection; one match is not aggregate validation.
+- `app.py`, `src/toto_estimator/service.py`, `predictor.py` and the smoke-test guide establish the current fictional-team, fixed-synthetic-history prototype, rating details and whole-ticket validation. It has no competition picker, probabilities or historical-comparison UI. Planned per-match availability is not existing error behavior.
+- Data collection/validation documents show historical-data preparation, not integration into the application. README source-rights limits justify the permitted-small-demo or synthetic fallback; no league coverage or performance claim is added.
+- The statistical probability method is still to be selected and evaluated. Existing rating differences are not probabilities, and earlier development accuracy is not evidence for the future model.
+- Setup commands and Python >=3.11 remain grounded in project metadata and existing launch documentation. No fresh dependency installation or platform certification was performed.
 
-**Try the local demo** · **Explore the code**
+## Revised website copy (in reading order)
 
-The demo uses synthetic football results and sample teams. It is an educational prototype with no verified real-world accuracy claim.
+Football predictions you can follow.
 
-## 2. Who it’s for
+Fourteen matches. Three possible outcomes each. The Pick Sheet is being developed to help you compare the possibilities before filling out a Toto ticket.
 
-### Curious about the reasoning behind a prediction?
+The goal: choose your matches, see the estimated chances of a home win, draw or away win, and review a recommended pick for every match in one clear table. Try the local demoExplore the code
 
-TOTOdology is for football fans curious about Toto-style tickets, and learners who want to explore a transparent approach to football statistics. It brings 14 match picks into one table and lets you inspect the ratings behind them.
+In development. This page describes the intended experience. The local prototype currently uses synthetic results and fictional teams; probabilities and previous-meeting comparisons are not available yet.
 
-You can start with the prefilled sample ticket, choose different home and away teams from the demo’s lists, and compare the resulting predictions.
+More context for every pick
 
-## 3. How predictions work
+For football fans weighing up a Toto ticket, a single pick tells only part of the story. The planned table will put the three outcome probabilities beside the recommendation, helping you see when the alternatives are close.
 
-### From results to a clear pick
+You will also be able to look back at the teams’ most recent meeting: what the model would have predicted before that match, what actually happened, and whether the pick matched the result.
 
-1. **Look at team performance.** The program calculates average points per match and average goal difference: goals scored minus goals conceded.
-2. **Include home and away records.** Each team’s rating combines its overall record with its record at the relevant venue: home for the host, away for the visitor.
-3. **Compare the ratings.** When the ratings are close, the rule selects **X** (draw). With a larger gap, it selects **1** (home win) if the home rating is higher, or **2** (away win) if the away rating is higher.
+Your 14 matches, in perspective
 
-Click **Generate predictions** to see all 14 picks. Open **Show rating details** to inspect the home rating, away rating and their difference.
+The planned experience — not yet available in the prototype
 
-## 4. Try it yourself
+Choose your matches.
 
-### Run the demo on your computer
+Manually enter 14 matches by choosing the competition, home team and away team for each row. Then select Predict.
 
-Get the project from [GitHub](https://github.com/esst-prog2/toto). You’ll need Python 3.11 or later. From the downloaded repository’s root folder, create and activate a virtual environment, install the project, and start Streamlit.
+Compare the possibilities.
 
-For macOS or Linux:
+A statistical model will use historical football results to estimate the chances of a home win, draw and away win. The table will show all three probabilities and recommend the most likely outcome for each match.
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install .
-streamlit run app.py
-```
+Check the last meeting.
 
-On Windows, create the environment with `py -m venv .venv` and activate it in PowerShell with `.venv\Scripts\Activate.ps1`, then run the same installation and launch commands.
+Where reliable history allows, the same table will show a prediction reconstructed for the teams’ most recent previous meeting, alongside its actual result. That prediction must use only information available before that earlier match.
 
-Open the local address printed by Streamlit. Keep the sample ticket or edit the team selections, then click **Generate predictions**. If the ticket has an invalid selection, fix the reported issue and try again.
+Missing data should stay visible. The planned application will flag unavailable predictions or historical comparisons for the affected match while keeping other available results. One past meeting is a useful comparison, not proof of future accuracy. 1Home winXDraw2Away win
 
-**[Explore TOTOdology on GitHub](https://github.com/esst-prog2/toto)**
+Try the prototype today
+The current local demo lets you edit a prefilled 14-match ticket of fictional teams and see rule-based picks with rating details. It has no competition selector, outcome probabilities or previous-meeting comparison. You’ll need Python 3.11 or later installed on your computer. This is a local Python application, not an online demo.
+Open the GitHub repository, choose Code → Download ZIP, then extract the ZIP. Open the extracted project folder containing app.py and pyproject.toml.
+Open Terminal on macOS or Linux, or PowerShell on Windows. Type cd, a space, and the full path to that extracted folder in double quotes, then press Enter. For example, cd "/full/path/to/toto-main" on macOS/Linux or cd "C:\Users\YourName\Downloads\toto-main" on Windows. Replace the example path with your own folder’s location. Keep this terminal open.
+In that terminal, run the commands below for your operating system, one line at a time. They create a separate Python environment, install the project and start the prototype. The environment is used directly, so you do not need to activate it.
+macOS or Linuxpython3 -m venv .venv
+.venv/bin/python -m pip install .
+.venv/bin/python -m streamlit run app.py
+Windows · PowerShellpy -m venv .venv
+.\.venv\Scripts\python.exe -m pip install .
+.\.venv\Scripts\python.exe -m streamlit run app.py
+Open the local address printed by Streamlit in your browser. The local prototype still opens as “Toto Estimator”. That is the existing application behind The Pick Sheet; its internal name has not changed. Keep the sample ticket or edit the team selections, then click Generate predictions. If the ticket has an invalid selection, fix the reported issue and try again. To stop the app, return to the terminal and press Ctrl+C.
+Explore The Pick Sheet on GitHub
 
-## 5. What to expect
+A clear goal. An honest work in progress.
 
-### A small demo with visible reasoning
+Competition selection, real-history integration, probability estimates and historically valid previous-meeting comparisons remain development work. The new statistical method still needs to be selected and evaluated on previously unseen matches; no accuracy improvement or reliable betting performance has been established.
 
-The current application runs locally with fixed synthetic history. It shows outcome picks and rating details. Its rules are designed to be understandable; they do not establish reliable betting performance or guarantee results.
-
----
-
-## Editorial notes and evidence (not website copy)
-
-- **Positioning:** The user chose a simple, professional, English-language page explaining the existing application. The audience wording is a proposed positioning choice, not evidence of user research. TOTOdology is the project name supplied by the user; the current application window says “Toto Estimator.”
-- **Source hierarchy:** [README](../README.md) supplies the project purpose, Toto context and stated limitations. Its “demo” and “first useful version” also describe planned probabilities, backtesting, competition selection and partial evaluation. Those are not current UI capabilities and are deliberately omitted from the page copy. No development accuracy figures are used.
-- **Current behaviour:** [Manual smoke-test guide](manual-smoke-test.md), [application](../app.py), [configuration](../src/toto_estimator/config.py) and [workflow](../src/toto_estimator/service.py) support the 14-position sample ticket, fixed demo files, control labels, rating display and whole-ticket validation. The demo files are public synthetic examples, not the privately collected league archives.
-- **Method:** [Statistics](../src/toto_estimator/statistics.py) and [prediction rules](../src/toto_estimator/predictor.py) support the points/goal-difference explanation, venue-specific ratings and draw band. The draw band is checked before choosing the higher-rated side; no outcome probabilities are implied.
-- **Local setup:** [Project metadata](../pyproject.toml) declares Python >=3.11 and runtime dependencies. The minimal runtime installation above is derived from that package configuration; [dependency environment notes](dependency-environment.md) document a fuller development install and its compatibility limits. The launch command is documented in the smoke-test guide. The virtual-environment commands are setup guidance, not a quotation from the README. A fresh installation, including Windows execution, was not performed for this content-only step.
-- **Links:** The repository URL matches the configured Git remote. “Try the local demo” is intended to link to the setup section on the eventual page. There is no hosted application URL or one-click online demo.
-- **gstack /office-hours:** Used Builder mode’s premise checking and alternative framing for this content draft. A task-first explanation was compared with a longer learning narrative; the concise explanation follows the user’s stated single-page direction. The supplied brief settled the purpose and scope, so no new discovery interview, external research, optional cross-model brainstorming, or visual design was run. The separate local office-hours brief passed the skill’s independent spec review with no findings. This is a draft, not a claim of user approval of the wording.
-- **Next action:** Review the headline, proposed audience and synthetic-demo wording before the separate Impeccable design step. No content decision blocks review of this draft.
+Public demos may use a smaller permitted dataset or synthetic data because some historical sources have unresolved redistribution rights. Coverage and results may differ from the full local data. Predictions are estimates, not guarantees.Explore the project

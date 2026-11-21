@@ -1,0 +1,51 @@
+name: Publish The Pick Sheet
+
+on:
+  push:
+    branches: [hw9-promo]
+    paths:
+      - homework9/index.html
+      - homework9/assets/**
+      - homework9/variants/assets/base.css
+      - homework9/variants/assets/a.css
+      - .github/workflows/homework9-pages.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: homework9-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/hw9-promo'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out approved source
+        uses: actions/checkout@v6
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Assemble only the public website
+        shell: bash
+        run: |
+          set -euo pipefail
+          site="$RUNNER_TEMP/pick-sheet-pages"
+          mkdir -p "$site/assets" "$site/variants/assets"
+          cp homework9/index.html "$site/index.html"
+          cp homework9/assets/brand.css homework9/assets/the-pick-sheet-logo.png "$site/assets/"
+          cp homework9/variants/assets/base.css homework9/variants/assets/a.css "$site/variants/assets/"
+          touch "$site/.nojekyll"
+      - name: Upload website artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ runner.temp }}/pick-sheet-pages
+      - name: Publish to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

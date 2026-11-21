@@ -1,6 +1,14 @@
 # Homework 9: three promotional-page variants
 
+## Selected direction — 2026-11-21 (current)
+
+The user selected A — Match Programme and the public name The Pick Sheet with the supplied green/yellow logo. The local implementation is at `homework9/index.html`; see [selected design and checks](hw9-final-design.md). This supersedes earlier selection-pending and TOTOdology identity instructions below, which remain historical context. Chrome-only visual review and final implementation approval are still pending. No commit, push or deployment is authorized.
+
 Prepared 2026-11-16 using the installed Impeccable `generate` workflow. **Selection pending:** all three candidates are separate; no final site, critique, publication or push is part of this step.
+
+## Content revision — 2026-11-21
+
+All candidates now share the revised vision-first copy in `hw9-page-content.md`. The target probabilities, competition selection and valid previous-meeting comparison are explicitly planned; the current fictional-team prototype remains distinct. CSS and A/B/C visual treatments are unchanged. Previous claims below about the old copy and Safari checks describe the 2026-11-16 generation step, not the current browser review. From this revision onward use Google Chrome exclusively. Selection remains pending.
 
 ## Preview
 
