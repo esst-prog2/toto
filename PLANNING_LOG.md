@@ -207,3 +207,5 @@
 
 2026-11-21 — User decided: approve the manually reviewed final The Pick Sheet site, authorize Homework 9 finalization, scoped commit and push of hw9-promo, GitHub Pages configuration/deployment and actual public verification; preserve feature/data-collection and all unrelated work, do not merge/delete branches, and do not begin Homework 10.
 2026-11-21 — Assistant decided: publish only the approved HTML, logo and three required CSS files with a hw9-promo-only GitHub Actions Pages workflow, preserving repository content and using relative asset paths compatible with /toto/.
+
+2026-11-21 — Assistant decided: give each Pages artifact a run/attempt-specific name after GitHub retry exposed duplicate github-pages artifacts in one workflow run; keep the approved website bytes unchanged.
