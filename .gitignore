@@ -12,3 +12,6 @@ __pycache__/
 /.agents/skills/gstack/
 /.agents/skills/gstack-*
 /.agents/skills/impeccable/
+
+# Homework 10: generated HyperFrames runtime/check/history state
+/homework10/**/.hyperframes/

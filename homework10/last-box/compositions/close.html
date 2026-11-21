@@ -1,0 +1,7 @@
+<template><style>#root{position:absolute;inset:0}svg{font-family:Inter,Arial,sans-serif}</style>
+ <div id="root" data-composition-id="close" data-width="1920" data-height="1080"><svg viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="Concept preview of The Pick Sheet: close"><g id="close-lockup" ><image id="close-logo" href="assets/logo.png" x="370" y="270" width="1180" height="271.4" preserveAspectRatio="xMidYMid meet"/><text x="960" y="655" font-size="48" font-weight="400" fill="#005239" text-anchor="middle">Explore the project</text><text x="960" y="753" font-size="64" font-weight="700" fill="#005239" text-anchor="middle">esst-prog2.github.io/toto/</text></g><line x1="370" y1="530" x2="1550" y2="530" stroke="#ffcc00" stroke-width="6" id="close-carry"/></svg></div>
+ <script>const tl=gsap.timeline({paused:true});
+tl.fromTo('#close-lockup',{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:.35,ease:'power2.inOut'},0);
+tl.to('#close-carry',{opacity:0,duration:.15},.25);
+
+window.__timelines=window.__timelines||{};window.__timelines['close']=tl;</script></template>

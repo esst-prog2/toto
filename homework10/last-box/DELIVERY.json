@@ -1,0 +1,52 @@
+{
+  "file": "../renders/the-pick-sheet-the-last-box-concept.mp4",
+  "sha256": "8c57298d61efcc4c5aa556837d6a813f53ba7ee91900fcb059408be1493aeb43",
+  "probe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "h264",
+        "profile": "High",
+        "codec_type": "video",
+        "width": 1920,
+        "height": 1080,
+        "pix_fmt": "yuv420p",
+        "r_frame_rate": "30/1",
+        "nb_read_frames": "900"
+      }
+    ],
+    "format": {
+      "duration": "30.000000",
+      "size": "1809970",
+      "bit_rate": "482658"
+    }
+  },
+  "check": {
+    "ok": true,
+    "browserSkipped": false
+  },
+  "disclosure_continuity": {
+    "frames_checked": 900,
+    "disclosure_crop": [
+      192,
+      906,
+      1536,
+      94
+    ],
+    "comparison": "mean absolute grayscale difference from visually confirmed first-frame disclosure",
+    "max_error": 0.1926529255319149,
+    "threshold": 2.0,
+    "status": "PASS",
+    "video_sha256": "8c57298d61efcc4c5aa556837d6a813f53ba7ee91900fcb059408be1493aeb43",
+    "atoms": [
+      "ftyp",
+      "moov",
+      "free",
+      "mdat"
+    ]
+  },
+  "review_url": "http://127.0.0.1:8770/review/",
+  "status": "User approved; embedding and public verification in progress"
+}

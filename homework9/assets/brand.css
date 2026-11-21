@@ -21,3 +21,8 @@ pre { scrollbar-color: var(--brand-green) var(--brand-paper); }
 @media (prefers-contrast: more) {
  .site-header, .section, .method-list li, .site-footer { border-color: var(--brand-muted); }
 }
+
+/* Approved concept film: fluid player within the existing introduction. */
+.concept-film { margin: 2rem 0 0; }
+.concept-film video { display: block; width: 100%; max-width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; background: var(--brand-paper); border: 1px solid #b6c7bb; border-radius: 8px; }
+.concept-film figcaption { margin-top: .75rem; max-width: 70ch; color: var(--brand-muted); font-size: 1rem; line-height: 1.55; }

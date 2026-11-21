@@ -1,0 +1,16 @@
+{
+  "logo": {
+    "source": "../../homework9/assets/the-pick-sheet-logo.png",
+    "file": "assets/logo.png",
+    "use": "Approved supplied brand asset, copied without edits"
+  },
+  "animation": {
+    "file": "assets/gsap.min.js",
+    "version": "3.15.0",
+    "source": "Official GSAP npm CDN asset already downloaded for the setup test"
+  },
+  "fonts": {
+    "family": "Inter",
+    "source": "HyperFrames bundled/cached Google Fonts renderer"
+  }
+}
