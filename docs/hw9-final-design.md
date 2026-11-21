@@ -54,3 +54,16 @@ Complete and record actual Chrome desktop/mobile review and resolve any observed
 ## User approval and publishing entry — 2026-11-21
 
 The user manually reviewed and approved the finished page, authorizing scoped commit/push and GitHub Pages publication. This supersedes earlier approval-pending statements. No claim is made that automated Chrome review succeeded. Publishing entry: homework9/index.html. The branch-only workflow .github/workflows/homework9-pages.yml assembles six files: index.html, assets/brand.css, assets/the-pick-sheet-logo.png, variants/assets/base.css, variants/assets/a.css and .nojekyll. Only this artifact is deployed at the repository Pages root; unrelated project files are excluded. Relative paths preserve the /toto/ project prefix. Publication verification is recorded in PROCESS.md after actual deployment.
+
+
+## Publication verified — 2026-11-21
+
+The approved The Pick Sheet website is published at **https://esst-prog2.github.io/toto/**.
+
+- Branch: hw9-promo. Finalization commit: 62ad62809abfcface23cbbd241f99df6aedbfef2. Deployment workflow correction/source: 3310faa847e60a5191330926db2016384ffdb2ba. Both pushed successfully to origin/hw9-promo with upstream configured.
+- Successful GitHub Actions deployment: https://github.com/esst-prog2/toto/actions/runs/44932112045 (completed, success). The earlier failed run and its retry remain documented above; the artifact naming correction resolved retry ambiguity.
+- Independent public HTTP checks: root HTML returned 200 and exactly matched homework9/index.html. All three CSS files and the transparent logo returned 200 and byte-for-byte matched approved local source. Their relative URLs resolve under /toto/. All fragment navigation targets exist; the shared external GitHub destination returned 200. The public page includes the approved The Pick Sheet title, planned/current feature distinction and Toto Estimator prototype-name explanation.
+- Publication was verified from the public URL, not inferred from Git push or workflow completion. This is HTTP/content/asset verification plus the user's earlier manual visual approval; no claim is made that previously unavailable automated Chrome desktop/mobile review succeeded.
+- Only explicitly staged Homework 9 website/documentation/workflow files were committed. No commands modified the separate feature/data-collection working files; no merge, branch deletion, repository/package rename, application changes or Homework 10 work occurred. Existing untracked homework9/.DS_Store was excluded and left untouched.
+- This publication record is a documentation-only follow-up commit; it does not change approved website bytes or trigger a new Pages deployment because of workflow path filters.
+- Remaining submission work: submit the public URL through the course's required channel, with repository/branch/PROCESS.md evidence if requested. The exact course portal/deadline/extra rubric is not available in these project documents; no course submission is claimed.
