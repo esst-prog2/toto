@@ -1,3 +1,12 @@
+> **Status: ARCHIVED — Version 1**
+>
+> - Model generation: Deterministic MVP
+> - Audit date: 2026-11-26
+> - Inspected commit: `878d45e`
+> - Original audit commit: `15012b4`
+>
+> This document is preserved as a historical record and does not represent the current model development direction. Its findings may still inform subsequent model generations.
+
 # Phase 1: existing evaluation audit
 
 Snapshot: 2026-11-26, commit `878d45e47f1ef861b1b774ecc89c94af7851cb34`, `feature/statistical-model`. No new model, parameter search or training experiment was run. Existing deterministic calculations were replayed in memory, with no data/report overwrites.

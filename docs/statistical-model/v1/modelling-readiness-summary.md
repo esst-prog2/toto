@@ -1,3 +1,12 @@
+> **Status: ARCHIVED — Version 1**
+>
+> - Model generation: Deterministic MVP
+> - Audit date: 2026-11-26
+> - Inspected commit: `878d45e`
+> - Original audit commit: `15012b4`
+>
+> This document is preserved as a historical record and does not represent the current model development direction. Its findings may still inform subsequent model generations.
+
 # Phase 1: modelling readiness summary
 
 Completed 2026-11-26 on `feature/statistical-model`; inspected HEAD `878d45e47f1ef861b1b774ecc89c94af7851cb34`. **The repository provides a reproducible deterministic benchmark and substantial historical collection infrastructure. It does not yet provide an implemented probabilistic model, a locally available multi-league modelling dataset or an independent evaluation of the intended next model.** Phase 1 is complete as an audit, with unavailable data and methodological uncertainties explicitly bounded; this is not a training-readiness certification.

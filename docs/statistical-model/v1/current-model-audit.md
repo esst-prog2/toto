@@ -1,3 +1,12 @@
+> **Status: ARCHIVED — Version 1**
+>
+> - Model generation: Deterministic MVP
+> - Audit date: 2026-11-26
+> - Inspected commit: `878d45e`
+> - Original audit commit: `15012b4`
+>
+> This document is preserved as a historical record and does not represent the current model development direction. Its findings may still inform subsequent model generations.
+
 # Phase 1: current model audit
 
 Audit date: 2026-11-26 (Europe/Budapest). Inspected commit: `878d45e47f1ef861b1b774ecc89c94af7851cb34`, branch `feature/statistical-model`, initially clean. This is a read-only implementation audit; no statistical model was selected, fitted anew, trained or changed. Existing deterministic benchmark calculations were replayed. See [data snapshot](data-readiness-audit.md) and [evaluation audit](evaluation-audit.md).

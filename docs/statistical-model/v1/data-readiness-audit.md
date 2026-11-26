@@ -1,3 +1,12 @@
+> **Status: ARCHIVED — Version 1**
+>
+> - Model generation: Deterministic MVP
+> - Audit date: 2026-11-26
+> - Inspected commit: `878d45e`
+> - Original audit commit: `15012b4`
+>
+> This document is preserved as a historical record and does not represent the current model development direction. Its findings may still inform subsequent model generations.
+
 # Phase 1: data readiness audit
 
 ## Snapshot boundary
