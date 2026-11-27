@@ -6,3 +6,10 @@ __pycache__/
 /build/
 
 /data/private/
+
+# Hungarian real-data research, reports and fixture-bearing helpers stay local.
+/docs/hungary-*
+/scripts/*hungary*.py
+/tests/test_hungary*.py
+# Local historical-audit fixtures require the private research archive.
+/tests/conftest.py

@@ -144,3 +144,22 @@ The five Phase 1 audits are preserved under `docs/statistical-model/v1/`, marked
 Created [Version 2 – Statistical Foundations](docs/statistical-model/v2/01-foundations.md) as a knowledge-preservation synthesis of all five archived Version 1 audits, primarily the feature-availability assessment. Its three main sections cover Version 1 lessons, available statistical information, and ten statistical/methodological considerations. It distinguishes audit facts, documented private-archive coverage, conceptual considerations and hypothetical examples; preserves historical-result policies without reopening them; and attributes the international regulation-time policy to the current user instruction because its provenance is not independently documented in the archived audits.
 
 Verified the three-section/ten-consideration structure, required feature categories and canonical fields, relative links, Markdown whitespace, unchanged five archived documents and unchanged existing code/tests/data. No experiments, statistical tests, literature research, model/feature selection, parameter commitments, implementation or additional Version 2 documents. This documentation-only step stops after the local commit on `feature/statistical-model`; no other worktree access, merge or push.
+
+### 2026-11-27 — Consolidated local collection workflow
+
+Hungarian collection integration follows the existing competition archive layout
+and shared validation contracts. Private research sources, outputs, review queues,
+permissions and archive-dependent helpers remain local; publication eligibility
+and statistical modelling eligibility are separate gates. Historical acquisition
+guards retain their recorded commit/index assertions in a verified isolated audit
+view, while separate tests protect the current integrated data. See
+[local data integration](docs/local-data-integration.md) for the architecture and
+verification boundaries. Preserve both planning histories and the unrelated local
+promotional audit; do not publish them as part of the integration. No source
+acquisition, methodological reclassification or model development is authorized.
+
+Verification completed: the complete repository suite and the current archive
+preservation checks pass. Historical source reconstruction runs offline from the
+original directory with access to the separate Hungarian worktree forbidden.
+Detailed record inventories and permission evidence remain local. No push or
+source-worktree removal was performed.
