@@ -6,8 +6,6 @@ See docs/historical-import.md for metadata, identity and rejection policies.
 from __future__ import annotations
 
 import csv
-import hashlib
-import json
 import re
 from collections import defaultdict
 from collections.abc import Iterable
@@ -18,11 +16,10 @@ from pathlib import Path
 from .models import DataValidationError, ValidationIssue
 from .outcomes import outcome_from_goals
 from .validation import exact_integer, team_name
+from .match_schema import LEGACY_COLUMNS, canonical_match_id, neutral_value
 
-OUTPUT_COLUMNS = (
-    "match_id", "date", "league", "season", "home_team", "away_team",
-    "home_goals", "away_goals",
-)
+# Frozen competition adapters retain v1 output unless v2 is explicitly requested.
+OUTPUT_COLUMNS = LEGACY_COLUMNS
 SCHEMAS = (
     ("HomeTeam", "AwayTeam", "FTHG", "FTAG"),
     ("Home", "Away", "HG", "AG"),
@@ -38,6 +35,7 @@ class HistoricalSource:
     country: str | None = None
     source_league: str | None = None
     encoding: str = "utf-8-sig"
+    neutral_venue: int | None = None
 
 
 @dataclass
@@ -125,7 +123,7 @@ def _rows(source: HistoricalSource):
         raise DataValidationError([_issue("source_error", source, None, str(exc))]) from exc
 
 
-def import_historical_csvs(sources: Iterable[HistoricalSource]) -> ImportResult:
+def import_historical_csvs(sources: Iterable[HistoricalSource], *, include_neutral_venue: bool = False) -> ImportResult:
     """Validate sources together; deduplicate across files and quarantine conflicts.
 
     total = accepted + rejected + duplicates + fixtures. conflicts is a
@@ -175,14 +173,16 @@ def import_historical_csvs(sources: Iterable[HistoricalSource]) -> ImportResult:
                 if any(value and value != expected_result for value in supplied_results):
                     raise ValueError("FTR/Res does not agree with full-time goals")
                 identity = (league, season, match_date, home, away)
-                digest = hashlib.sha256(json.dumps(identity, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
+                digest = canonical_match_id(*identity)
                 record = dict(zip(OUTPUT_COLUMNS, (digest, match_date, league, season, home, away, *goals)))
+                if include_neutral_venue:
+                    record["neutral_venue"] = neutral_value(source.neutral_venue)
                 groups[identity].append((record, source, number))
             except ValueError as exc:
                 result.summary["rejected"] += 1
                 result.issues.append(_issue("invalid_record", source, number, str(exc)))
     for identity, entries in sorted(groups.items()):
-        scores = {(r["home_goals"], r["away_goals"]) for r, _, _ in entries}
+        scores = {(r["home_goals"], r["away_goals"], r.get("neutral_venue")) for r, _, _ in entries}
         if len(scores) > 1:
             evidence = "; ".join(f"{s.path} row {n}: {r['home_goals']}-{r['away_goals']}" for r, s, n in entries)
             result.summary["rejected"] += len(entries)

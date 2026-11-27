@@ -30,7 +30,7 @@ Repository review covered the acquisition/inventory/structure/review/policy/stan
 
 | Component | Safe reuse | Competition-specific work |
 |---|---|---|
-| `src/toto_estimator/historical_import.py` | `HistoricalSource`, `canonical_season`, `import_historical_csvs`, exact eight-column schema, strict metadata/date/score validation and existing identity convention | Explicit league/source mappings, encoding and supported input schema. Calendar-year seasons are supported; do not assume European season dates. Inspect importer rejections rather than discarding them. |
+| `src/toto_estimator/historical_import.py`; `src/toto_estimator/match_schema.py` | `HistoricalSource`, `canonical_season`, explicit v2 import support, canonical column definitions, strict metadata/date/score/neutrality validation and existing identity convention; frozen v1 adapters remain compatible | Explicit league/source mappings, encoding, supported input schema and evidence-bound competition-format neutrality. Calendar-year seasons are supported; do not assume European season dates. Inspect importer rejections rather than discarding them. |
 | `scripts/artifact_io.py`; `tests/test_artifact_io.py` | Deterministic CSV bytes, distinct-output and overwrite checks | New private destinations; immutable manifest binding. These helpers alone do not establish provenance or historical acceptance. |
 | `acquire_bundesliga_csv.py`, `acquire_second_bundesliga.py`, `collect_belgian_pro_league_{feasibility,history}.py` and acquisition tests | Bounded requests, pinned revisions/blob verification, original/receipt pairs, verified cache replay and access-stop patterns | URLs, permission evidence, source license, headers, pins, limits and coverage. Belgian collectors embed exact file allowlists and preservation chains. |
 | `inventory_belgian_pro_league_history.py`, `validate_belgian_pro_league_structure.py`, `verify_belgian_pro_league_inventory.py`; analogous Ligue/Spanish/Portuguese scripts | Physical-record traceability, season/stage matrices, overlap and event accounting, independent raw parsing | Grammar, declared seasons, date windows, club counts, stage/round/group/leg rules, source-specific name correspondences and anomaly thresholds. Belgian counts and misplaced-season exception are not defaults. |
@@ -41,7 +41,7 @@ Repository review covered the acquisition/inventory/structure/review/policy/stan
 
 No generic five-phase runner or league configuration loader is currently supplied by this specification. For the pilot, use a small private, versioned configuration manifest containing competition identity, target seasons/as-of snapshot, source URLs/pins/rights, private paths, grammar, season-format eras, stage/tier eligibility, approved policy version, baseline and exact phase commands. A manifest is declarative input, not executable historical truth. Validate required fields and path containment in any new adapter.
 
-Implement only adapters that the selected competition actually requires, with focused synthetic tests. Reuse shared helpers by import; do not copy whole historical script chains or rewrite completed leagues. Keep independent validation separate from the production parser, mapping tables, ID helpers and serialization. A generic orchestrator, wholesale refactor and new dependencies are unnecessary for a pilot. A tiny timing wrapper is optional; a structured private timing log is sufficient.
+Implement only adapters that the selected competition actually requires, with focused synthetic tests. Reuse shared helpers by import; do not copy whole historical script chains or rewrite completed leagues. Keep independent validation separate from the production parser, mapping tables, ID helpers and serialization. A generic orchestrator, wholesale refactor and new dependencies are unnecessary for a pilot.
 
 ## Phase 1 — Source acquisition
 
@@ -74,8 +74,20 @@ Assign exactly one decision per event: **INCLUDE** for supported played, in-scop
 **Deliverables:** private canonical CSV, detailed source-to-decision-to-output audit, deterministic manifest and independent reconstruction assessment. Schema, in this exact order:
 
 ```csv
-match_id,date,league,season,home_team,away_team,home_goals,away_goals
+match_id,date,league,season,home_team,away_team,home_goals,away_goals,neutral_venue
 ```
+
+Schema v2 was owner-approved during Champions League Phase 4 on 2026-11-27;
+the first eight fields and match-ID definition are unchanged. `neutral_venue`
+describes official competition format: 0 conventional home/away, 1 officially
+neutral-site, empty when genuinely unknown. It does not describe actual stadium
+neutrality or measured home advantage. Preserve first/second orientation and
+document season/stage format rules; a single-leg tie or relocation alone does not
+establish neutrality. Keep period scores, administrative exceptions and physical
+venue evidence in private metadata, following [PROCESS.md](../PROCESS.md) and
+[the canonical schema](match-schema.md). Historical v1 outputs/receipts and legacy
+inputs remain reproducible; extending another approved dataset requires explicit
+owner authorization and zero changes to its pre-existing fields, IDs or ordering.
 
 Use ISO dates, canonical single-year or consecutive `YYYY/YYYY` seasons, approved league label and source-supported season-bound team names. Preserve the existing SHA-256 identity of UTF-8 compact JSON `[league,season,date,home_team,away_team]`; follow existing output ordering and CSV byte conventions explicitly. Never add stage suffixes or change shared identity rules to hide a collision: stop and resolve the identity issue.
 
@@ -83,7 +95,7 @@ Use ISO dates, canonical single-year or consecutive `YYYY/YYYY` seasons, approve
 
 The independent validator reads original bytes and frozen approved event membership/decisions, independently reconstructs names, dates, results, IDs, ordering and serialization, and compares every field and full CSV bytes/SHA-256. It must not import production content/parsing/naming/ID/serialization helpers or use the production inventory as its raw truth. Sharing the approved policy and event membership is allowed; independently verify every bound contributor and decision projection. Cross-source historical corroboration and code independence are separate claims: disclose common upstreams and missing external corroboration.
 
-Reproduce production artifacts and the independently reconstructed CSV in separate processes and fresh temporary directories; compare deterministic bytes/hashes without overwriting approved outputs. Keep timestamps/timing logs outside deterministic content. Run focused standardization/importer/independent-validator tests, including incorrect IDs, missing/extra rows, changed source bytes, alias collisions and valid rematches. Reuse Phase 2 independent parsing implementation, pinned to original hashes, without weakening its separation from production.
+Reproduce production artifacts and the independently reconstructed CSV in separate processes and fresh temporary directories; compare deterministic bytes/hashes without overwriting approved outputs. Keep run-specific metadata outside deterministic content; retain immutable source-provenance and evidence timestamps. Run focused standardization/importer/independent-validator tests, including incorrect IDs, missing/extra rows, changed source bytes, alias collisions and valid rematches. Reuse Phase 2 independent parsing implementation, pinned to original hashes, without weakening its separation from production.
 
 **Proceed only if:** exact independent reconciliation and reproducibility pass, required protected fingerprints match, privacy checks pass, limitations are reported, and the owner approves Phase 4. A rerun of the production standardizer alone is not independent validation.
 
@@ -91,19 +103,21 @@ Reproduce production artifacts and the independently reconstructed CSV in separa
 
 **Deliverables before publication:** concise public methods/coverage/limitations and test summary; private final preservation and validation receipt; exact public path allowlist, reviewed diff and proposed commit message/branch/remote. Append project decisions to `PLANNING_LOG.md`, preserving its earlier bytes.
 
-**Checks:** run the complete repository suite once with the unchanged approved environment (`<approved-python> -B -m pytest`), after final code changes and before publication. Record command, interpreter, exit status, passed/failed/skipped counts and duration; explain skips. Recheck independent reproduction if its inputs or code changed after Phase 4. Verify preservation scope, HEAD/index and unrelated dirty files, private ignore/untracked status, public diff and license/training disclosures. Inspect allowlisted files for embedded raw records, detailed private audits, credentials and restrictive source content; ignore rules alone do not prove privacy.
+**Checks:** run the complete repository suite once with the unchanged approved environment (`<approved-python> -B -m pytest`), after final code changes and before publication. Record command, interpreter, exit status and passed/failed/skipped counts; explain skips. Recheck independent reproduction if its inputs or code changed after Phase 4. Verify preservation scope, HEAD/index and unrelated dirty files, private ignore/untracked status, public diff and license/training disclosures. Inspect allowlisted files for embedded raw records, detailed private audits, credentials and restrictive source content; ignore rules alone do not prove privacy.
 
 **Publication gate:** present the short report and exact staging/commit/push plan; stop for explicit owner authorization. Only then stage named public paths individually (`git add -- <approved-paths>`), never `git add .` or private/force-added artifacts. Inspect the actual staged diff, run `git diff --cached --check`, verify staged names equal the approved list and repeat staged-content privacy review. If approval scope or content changes, stop for renewed approval. Commit normally, push only to the approved branch/remote, and verify the resulting commit/upstream identity. No merge, rebase, force push or automatic next competition.
 
 **Completion criterion:** authorized public commit/push verified, all checks pass, protected data unchanged and final report delivered. If publication is not authorized, report “publication pending,” preserve the unstaged result and stop. After Phase 5, require explicit approval before selecting or starting another competition. For preparation of this specification itself: no staging, commit, push or full-suite run.
 
-## Speed and measurement
+## Efficient execution and verification
 
 Produce one authoritative artifact per purpose, referenced by hash across phases; do not duplicate full inventories/reports for each check. Production parsing runs once per frozen input/parser revision, with a hash-keyed private cache if useful. Independent parsing remains a separate necessary pass. Invalidate caches on source, parser or configuration changes. New process byte reproduction remains mandatory in Phase 4; it is purposeful verification, not redundant reporting.
 
 At each phase, run focused tests for changed behavior/dependencies; reserve the complete suite for Phase 5. Repeat it only after a relevant change/failure or unresolved concern. Reuse a still-valid final run for the same tested code tree; never claim a stale run covers new code. Use bounded diagnostics for slow filesystem reads, with exact fresh-versus-cached scope; do not repeatedly hash every installed package or claim uncompleted scans passed. Required protected-data checks remain mandatory. No parallel competitions.
 
-Privately log phase/attempt ID, UTC start/end, approval request/receipt, commands, interpreter, input/config/code digests, outcomes and cache status. Measure command and active-session elapsed time with a monotonic clock; sum work sessions including failed attempts, research and verification. Report active wall time, approval-wait time and total calendar elapsed separately; record network/file-provider wait as a component, without double-counting overlapping commands. Maintain an append-only phase timing ledger outside deterministic artifacts. Report measured values, never estimates as actuals. Compare pilot versus prior work only where scopes and timing evidence are comparable; no speedup percentage is established yet.
+Privately record phase/attempt IDs, approval requests/receipts, commands, interpreter, input/config/code digests, outcomes and cache status. Preserve failed-attempt evidence and access-stop records. Execution-time measurement and reporting, separate timing ledgers and execution-speed comparisons are not required.
+
+Preserve timestamps needed for source provenance, acquisition receipts, historical evidence and audit traceability, including approval records. These are distinct from execution-duration measurements. Previously recorded timing information in completed reports and historical logs must remain unchanged. All data-quality, nine-phase output-equivalence, independent-validation, reproducibility, testing, preservation, privacy, licensing and phase/publication approval requirements remain in force.
 
 ## One-report template
 
@@ -113,7 +127,6 @@ Scope and frozen input/config/code hashes; private deliverable references:
 Coverage and accounting (representations/events/decisions/output; gaps):
 Checks: exact commands, exit status, results; independent method and limits:
 Preservation/privacy/rights findings; failures or unresolved risks:
-Time: active wall / approval wait / total elapsed; failed attempts included:
 Decision requested: approve Phase N and authorize Phase N+1 only
 (or Phase 5 exact public paths + commit/push plan; then STOP).
 ```
@@ -133,7 +146,7 @@ metadata; quarantine isolated unresolved representations and continue with
 reduced coverage. Do not fabricate or include unresolved results. Stop for
 systemic/uncontained integrity, provenance or privacy failure. Run focused checks; run the
 full suite only for final publication as specified. Append decisions to the
-planning log. Record actual phase timing. Deliver one short phase report and
+planning log. Preserve provenance and evidence timestamps. Deliver one short phase report and
 STOP for explicit approval; do not advance or start another competition.
 No staging/commit/push unless separately authorized against an exact public
 allowlist after the Phase 5 report.

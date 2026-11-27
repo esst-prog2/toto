@@ -10,6 +10,7 @@ import pandas as pd
 from .models import DataValidationError, ValidationIssue
 from .outcomes import outcome_from_goals
 from .validation import exact_integer, frame_issues, team_name
+from .match_schema import neutral_value
 
 HISTORICAL_COLUMNS = ("season", "date", "home_team", "away_team", "home_goals", "away_goals")
 TICKET_COLUMNS = ("position", "home_team", "away_team")
@@ -58,6 +59,7 @@ def validate_historical_data(frame: pd.DataFrame) -> pd.DataFrame:
     dates = []
     goals = {column: [] for column in ("home_goals", "away_goals")}
     results = []
+    neutrality = []
     for index, row in normalized.iterrows():
         source_row = index + 2
         names = {}
@@ -97,6 +99,12 @@ def validate_historical_data(frame: pd.DataFrame) -> pd.DataFrame:
             if not isinstance(supplied, str) or supplied not in ("1", "X", "2") or (result is not None and supplied != result):
                 issues.append(ValidationIssue("invalid_outcome", f"result at historical row {source_row} must be 1/X/2 and agree with the goals; received {supplied!r}.", row=source_row))
         results.append(result)
+        if "neutral_venue" in normalized.columns:
+            value = row["neutral_venue"]
+            try:
+                neutrality.append(neutral_value(None if pd.isna(value) else value))
+            except (ValueError, TypeError):
+                issues.append(ValidationIssue("invalid_neutral_venue", f"neutral_venue at historical row {source_row} must be 0, 1 or missing.", row=source_row))
     if issues:
         raise DataValidationError(issues)
     normalized["season"] = normalized["season"].astype(str).str.strip()
@@ -104,6 +112,8 @@ def validate_historical_data(frame: pd.DataFrame) -> pd.DataFrame:
     for column, values in goals.items():
         normalized[column] = pd.Series(values, dtype="int64")
     normalized["result"] = results
+    if "neutral_venue" in normalized.columns:
+        normalized["neutral_venue"] = pd.array(neutrality, dtype="Int8")
     return normalized.sort_values("date", kind="stable").reset_index(drop=True)
 
 

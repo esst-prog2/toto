@@ -1,5 +1,16 @@
 # Local historical CSV importer
 
+The current unified format is [canonical schema v2](match-schema.md): the original
+eight fields followed by nullable `neutral_venue`. Frozen competition adapters
+retain their explicit v1 output by default for historical reproducibility. Request
+`import_historical_csvs(sources, include_neutral_venue=True)` for v2; provide an
+evidence-supported `HistoricalSource(..., neutral_venue=0)` or `1`, otherwise the
+value remains missing. Source home/away columns never imply a classification.
+`OUTPUT_COLUMNS` is the legacy compatibility alias; new v2 writers use
+`toto_estimator.match_schema.CANONICAL_COLUMNS`. Conflicting neutrality metadata in
+v2 duplicate observations quarantines the conflicting group just like scores.
+The common match-ID algorithm is unchanged and excludes neutrality.
+
 `toto_estimator.historical_import.import_historical_csvs` reads local files only.
 It returns an `ImportResult` containing `records`, `summary` and source/row
 `issues`. It never writes files, downloads data, or calls prediction code.
