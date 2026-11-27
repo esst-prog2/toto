@@ -163,3 +163,20 @@ preservation checks pass. Historical source reconstruction runs offline from the
 original directory with access to the separate Hungarian worktree forbidden.
 Detailed record inventories and permission evidence remain local. No push or
 source-worktree removal was performed.
+
+### 2026-11-27 — Publication and Hungarian worktree closure
+
+The complete newly reachable history, including earlier statistical-documentation
+versions and planning/process revisions, passed publication review. Integration
+commit `3b94f1c` was pushed only to `feature/data-collection`; an independent remote
+query confirmed the exact commit and no unrelated reference changes.
+
+The redundant Hungarian worktree was removed only after its full file inventory,
+private data, planning history and retained copies were verified. Its Git branch,
+all external backups, the original repository and the promotional worktree remain.
+Post-removal verification passed the complete suite (3,038 tests and 35 subtests),
+consolidated inventory checks and offline source reconstruction from original
+`toto`. See the [public planning summary](docs/public-planning-summary.md) for the
+aggregate inventory and continuing restrictions. Detailed research evidence and
+private planning additions remain local. Closure performs no subsequent
+development or new modelling-eligibility audit.
