@@ -1,0 +1,41 @@
+> **Status: ARCHIVED — Version 1**
+>
+> - Model generation: Deterministic MVP
+> - Audit date: 2026-11-26
+> - Inspected commit: `878d45e`
+> - Original audit commit: `15012b4`
+>
+> This document is preserved as a historical record and does not represent the current model development direction. Its findings may still inform subsequent model generations.
+
+# Phase 1: current model audit
+
+Audit date: 2026-11-26 (Europe/Budapest). Inspected commit: `878d45e47f1ef861b1b774ecc89c94af7851cb34`, branch `feature/statistical-model`, initially clean. This is a read-only implementation audit; no statistical model was selected, fitted anew, trained or changed. Existing deterministic benchmark calculations were replayed. See [data snapshot](data-readiness-audit.md) and [evaluation audit](evaluation-audit.md).
+
+## Implemented versus intended
+
+`app.py` loads `data/historical_matches.csv` through `config.HISTORICAL_DATA_PATH`: 150 synthetic matches, six fictional teams. It does not load the historical private collections or `real_matches.csv`. The UI edits 14 home/away selections and displays labels and optional ratings. `models.Prediction` has no probability or backtest fields. `service.run_workflow` rejects the entire ticket on any validation/history issue. Competition selection, three outcome probabilities, row-specific availability and previous-meeting backtesting in README are future scope, explicitly confirmed by `openspec/changes/finalize-homework-8-demo/{proposal,design,tasks}.md`; all eight tasks remain unchecked.
+
+## Complete mathematical pipeline
+
+1. `data.py:50` (`validate_historical_data`) requires season, date, home/away team and home/away goals; copies inputs, trims names, validates distinct nonblank teams, date and nonnegative exact int64 goals, checks any supplied result, derives result by comparing goals, and stably sorts by date. Extra columns survive. It does not filter to a forecast cutoff, league, eligibility or source permission; does not itself eliminate duplicate match rows. Blank season strings are not independently rejected here.
+2. `statistics.py:14` doubles each match into team observations. Points are 3 for a win, 1 for a draw, 0 for a loss. Goal difference is goals for minus goals against. For team t and scope s (overall, home, away), with n observations: `PPM(t,s)=sum(points)/n`, `GDPM(t,s)=sum(goal difference)/n`. Overall is match-weighted, not necessarily an equal average of the venue rates. Every supplied historical row has equal weight; no season reset or rolling window.
+3. `statistics.py:42,71` min-max normalizes: `N(x)=(x-min)/(max-min)`. Overall PPM and overall GDPM each use their own all-team bounds. Home and away PPM share bounds over the pooled two venue series; home and away GDPM share another pooled range. Constant non-null series become 0.5; missing rates stay missing. All teams supplied participate in extrema, including teams outside the fixture or division. There are four fitted ranges, not six independent ones. Ranges are recomputed whenever the supplied history changes.
+4. `predictor.py:69,78` defines `C(t,s)=0.70*N(PPM(t,s))+0.30*N(GDPM(t,s))`; `Rhome=0.50*C(home,overall)+0.50*C(home,home)` and `Raway=0.50*C(away,overall)+0.50*C(away,away)`. Thus effective coefficients are 0.35 overall PPM, 0.15 overall GDPM, 0.35 venue PPM, 0.15 venue GDPM. `d=Rhome-Raway`.
+5. `predictor.py:95` returns `1` for d > 0.10, `2` for d < -0.10, otherwise `X`. Both boundary values predict X. Finite-value checks reject invalid rating inputs. A draw is a rating-similarity decision, not an estimated probability of equal goals.
+6. `predictor.history_issues` requires each team known, at least 10 overall observations, at least 5 at its fixture venue. Missing venue counts become zero in statistics; no prior, imputation, shrinkage or fallback prediction is supplied. Service validates ticket size 14, positions 1–14, known distinct teams and unique unordered pairings (`ticket.py`). One failure suppresses all predictions. `predict_fixture` itself raises ValueError for insufficient history; callers must respect this interface.
+
+## Parameters, estimation and football interpretation
+
+`config.py` contains all weights, minimum counts and threshold above. They are explicit fixed MVP choices, not coefficients estimated by likelihood, regression or optimization. The empirical rates and min/max ranges are data-derived. No optimizer, tuning search, uncertainty interval or calibration procedure is present in this prediction path. The planning log (2026-09-27/28) documents manual choices; `docs/home-advantage-investigation.md` documents the later shared-venue-scale change.
+
+Team strength is relative points/goal-difference performance, without adjustment for opponent quality or competition strength. Home advantage is represented implicitly by venue rates on a common scale; there is no additive home coefficient. This corrects a previous scaling defect but does not establish adequate home-effect modelling. Promotion/relegation has no special treatment: the spike includes prior Championship teams so promoted teams have history, but takes lower-tier rates as directly comparable to Premier League rates. Name equality alone defines team identity. No legal-club continuity or cross-provider alias resolver exists in the runtime predictor.
+
+No outcome probability estimation exists. Ratings in [0,1] and differences in [-1,1] are not normalized outcome probabilities. Historical performance is computed only by the separate spike evaluator, not by the live workflow; no current last-meeting lookup exists.
+
+## Reproduced example and assumptions
+
+Read-only `run_workflow_from_files('data/historical_matches.csv','data/sample_ticket.csv')` succeeded with 14 predictions. Position 1 Team A–Team B yielded home rating 1.0, away rating 0.6074659550975341, difference 0.3925340449024659, output `1`. This is a synthetic functional check, not evidence of predictive skill.
+
+The fixed rule assumes equal importance of old and recent matches, comparable teams and divisions, stable names, adequate information after 10/5 matches, and draw likelihood related to rating proximity. Min/max bounds depend on extreme teams and sample composition; no robustness or uncertainty correction is implemented. Goals/points reuse related outcome information. No attack/defence separation, fatigue, schedule strength, season drift or injury information is used. `run_workflow` has no target match date and will consume future rows if the caller supplies them. Input validity does not establish pre-match information validity.
+
+The generator (`scripts/generate_synthetic_history.py`) uses hidden strengths and independent Poisson scoring with seed 20260927; base 1.35, home advantage 0.20, rates `1.35+home_strength-away_strength+0.20` and `1.35+away_strength-home_strength`. Generator-only strengths are A +0.35, B +0.20, C +0.08, D -0.05, E -0.18, F -0.32. It uses PCG64 and draws home then away goals in deterministic fixture order, ten matchdays per season at 21-day intervals. These are synthetic-generation choices; runtime does not import them and they are not a fitted Poisson prediction model.

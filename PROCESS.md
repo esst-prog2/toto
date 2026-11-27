@@ -1,10 +1,18 @@
-# Project data process
+# Project process
+
+This integration preserves the data-collection operating rules and the statistical
+workstream record below. Statistical audit counts, schema descriptions and completed
+work statements describe their original branch and inspection date; they are not
+fresh assertions about the integrated tree. Historical phase and publication gates
+record the scope of those operations, not authorization for further development.
+
+## Project-wide rules and data-collection procedures
 
 Use the [controlled five-phase workflow](docs/accelerated-five-phase-workflow.md).
 Each phase ends with a report and explicit owner approval before the next phase.
 No phase approval implicitly authorizes publication, training or a broader source scope.
 
-## Score-period requirement
+### Score-period requirement
 
 Owner-approved on 2026-11-26: model-eligible **played matches** require a supported
 regulation-time result: 90 minutes plus stoppage time, excluding extra time and
@@ -22,7 +30,7 @@ Preserve stage, round, group, path, leg, status and source-designated orientatio
 Parsers and independent validators must retain period annotations through every
 intermediate representation. Test extra-time-first and shootout-first notations.
 
-## Administrative results and scope
+### Administrative results and scope
 
 The previously approved retrospective internal-diagnostics policy remains in force:
 original football dates and sufficiently supported accepted final historical
@@ -32,7 +40,7 @@ label the policy exception in private audits. Do not misclassify an award as ext
 time. Existing no-kickoff, abandonment, replay, eligibility and exclusion decisions
 remain unchanged; this methodological requirement does not reopen domestic decisions.
 
-## Approved competition-format neutrality and schema v2
+### Approved competition-format neutrality and schema v2
 
 Owner-approved Phase 4, 2026-11-27: `neutral_venue` describes the **official
 competition format**, not the physical stadium or measured home advantage:
@@ -63,7 +71,7 @@ and verify that removing it reproduces the old bytes. Retain exact private backu
 before/after hashes and per-file comparisons; do not rewrite prior audit manifests.
 The accepted score-period audit therefore remains valid with its original limits.
 
-## Deployment and source permissions
+### Deployment and source permissions
 
 The approved deployment strategy remains local/private real-data processing and
 modeling, with only a synthetic-data demonstration publicly deployed. Historical
@@ -78,7 +86,7 @@ playoffs and cross-division fixtures. A stage called “playoff” is not automa
 an extra-time contest: season-specific league-group and knockout rules differ.
 Scope changes and uncertain historical decisions require explicit approval.
 
-## Accepted domestic retrospective audit
+### Accepted domestic retrospective audit
 
 The owner accepted the [domestic score-period audit](docs/domestic-score-period-audit.md)
 on 2026-11-26. It found no identified extra-time/shootout contamination in 156,579
@@ -94,7 +102,7 @@ audit scripts are preserved byte-for-byte under the Git-ignored private location
 originals, standardized datasets, receipts and evidence must remain private.
 Preserve source attribution and all licensing/model-training restrictions.
 
-## Completeness and validation
+### Completeness and validation
 
 Report coverage separately by season and stage; preserve missing/unscored fixtures,
 source overlaps and quarantines without fabricating records. Prioritize recent
@@ -112,3 +120,27 @@ unless a material integration risk or explicit owner instruction requires it.
 The schema-changing UCL Phase 4 explicitly requires the complete repository suite.
 Stop for systemic provenance,
 integrity or privacy failures; isolate traceable source problems and retain gaps.
+
+## Statistical workstream history and archival requirements
+
+### 2026-11-26 — Statistical model development Phase 1 audit
+
+Executed the attached TOTOdology Phase 1 instructions on `feature/statistical-model`, inspecting clean baseline `878d45e47f1ef861b1b774ecc89c94af7851cb34`. PROCESS.md was absent and is created by this audit.
+
+Deliverables: [current model](docs/statistical-model/v1/current-model-audit.md), [data readiness](docs/statistical-model/v1/data-readiness-audit.md), [feature availability](docs/statistical-model/v1/feature-availability.md), [existing evaluation](docs/statistical-model/v1/evaluation-audit.md), and [modelling readiness summary](docs/statistical-model/v1/modelling-readiness-summary.md).
+
+Findings: implemented synthetic deterministic MVP differs from planned probabilistic workflow; 1,312 real matches locally available, while private multi-league datasets/sidecars are absent here. Collection reports describe 156,321 screened historical rows across 14 competitions; that is documentary coverage, not a fresh data validation. Existing benchmark and both committed artifacts reproduced byte-for-byte in memory: 158/380 correct (41.58%), below the 46.05% always-home baseline. Historical date/result-policy differences and adaptive use of the evaluation season limit forecasting claims.
+
+Verification: complete existing suite passed in an unchanged external environment, 2,678 tests plus 27 subtests, zero failures/errors/skips (20.01 seconds). Exact command, initial missing-pytest attempt and reproducible read-only inspections appear in the evaluation/data reports. No new dependencies, models, features, dataset changes or application changes. Documentation committed locally on the existing branch; no merge, worktree switch or push. Phase 1 complete with explicit evidence limits; stopped pending approval for subsequent statistical work.
+
+### 2026-11-27 — Version 1 documentation archive
+
+Previous model generations, methodological decisions, audits and experimental results must be preserved and explicitly marked as historical when superseded. Preserve their complete contents; only status headers and necessary relative links may change during archival.
+
+The five Phase 1 audits are preserved under `docs/statistical-model/v1/`, marked ARCHIVED — Version 1 / Deterministic MVP, with audit date 2026-11-26, inspected commit `878d45e` and original audit commit `15012b4`. Their historical findings may inform subsequent model generations but do not represent the current model development direction. Repository links were updated and all five original bodies verified byte-for-byte against the pre-archive commit. No Version 2 documents, implementation, tests or datasets were changed.
+
+### 2026-11-27 — Version 2 statistical foundations
+
+Created [Version 2 – Statistical Foundations](docs/statistical-model/v2/01-foundations.md) as a knowledge-preservation synthesis of all five archived Version 1 audits, primarily the feature-availability assessment. Its three main sections cover Version 1 lessons, available statistical information, and ten statistical/methodological considerations. It distinguishes audit facts, documented private-archive coverage, conceptual considerations and hypothetical examples; preserves historical-result policies without reopening them; and attributes the international regulation-time policy to the current user instruction because its provenance is not independently documented in the archived audits.
+
+Verified the three-section/ten-consideration structure, required feature categories and canonical fields, relative links, Markdown whitespace, unchanged five archived documents and unchanged existing code/tests/data. No experiments, statistical tests, literature research, model/feature selection, parameter commitments, implementation or additional Version 2 documents. This documentation-only step stops after the local commit on `feature/statistical-model`; no other worktree access, merge or push.
