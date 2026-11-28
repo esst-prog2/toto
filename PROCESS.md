@@ -180,3 +180,94 @@ consolidated inventory checks and offline source reconstruction from original
 aggregate inventory and continuing restrictions. Detailed research evidence and
 private planning additions remain local. Closure performs no subsequent
 development or new modelling-eligibility audit.
+
+
+### 2026-11-27 — Europa League Phase 3 historical review
+
+The owner accepted the Europa League Phase 2 baseline and authorized historical
+adjudication. Preserve accepted Phase 1/2 artifacts and original source observations.
+Use source-bound additive decisions, complete case accounting, reversible event
+lineage, independent attribute checks and an offline rebuild. Detailed real-data
+artifacts remain ignored under `data/private/europe/europa_league/phase3/`.
+
+For this explicitly requested regulation-time modelling target, use observed
+90-minute scores separately from accepted administrative results. A match abandoned
+before regulation completion cannot supply completed regulation goals. Extra-time
+abandonment does not invalidate an already completed, evidenced regulation result.
+Preserve both the incomplete extra-time score and the later award. This does not
+rewrite previously accepted domestic or Champions League policies or datasets.
+
+Keep outcome-only and goal-model eligibility separate. Do not invent exact goals
+from a shootout or aggregate alone. Pre-2021 away-goals equality requires an
+identified first leg; old two-legged finals need their own rules or unique score
+bounds. Preserve competing dates and source schedule intervals; prefer supported
+actual fixture dates without blanket first/last-day interval assignment.
+
+Continue the approved official-format neutral_venue tri-state and historical
+first-listed orientation. Ambiguous names such as AEK and Inter require seasonal
+participant context. Incorrect provider labels or countries are corrected only in
+bound occurrences; original source IDs and previously accepted project IDs remain
+unchanged. Seasonal fixture correspondence does not establish legal succession.
+
+See [the Phase 3 report](docs/uefa-europa-league-phase3.md) for decisions, coverage,
+validation and limitations. No Phase 4 standardization, production import, model
+or application change is authorized by Phase 3 completion. Explicit owner approval
+is required before Phase 4.
+
+## UEFA Cup / Europa League Phase 4 standalone standardization (2026-11-28)
+
+The owner-authorized Phase 4 output stays private and separate from the combined
+historical database. Inspect the latest consolidated schema and identifier code
+read-only rather than assuming the older nine-column/SHA-256 export is current.
+The confirmed consolidated column order is match_id,country,league,season,date,
+home_team,away_team,home_goals,away_goals,neutral_venue. Retain historical competition
+labels and the original compact-JSON SHA-256 identity in a reversible crosswalk.
+Use the upstream four-character team-token algorithm, including its leading 1. FC
+exception, with a documented proposed six-character UEFA competition prefix.
+Never treat these name-derived abbreviations as globally unique club identities.
+Record their ambiguities and keep accepted seasonal identities and full names.
+
+Transfer accepted on-field regulation scores and actual playing dates exactly,
+except for separately evidenced, hash-bound derivative corrections. Preserve the
+accepted Phase 3 bytes, old and corrected values, correction evidence and resulting
+identifier change. The Phase 4 chronology audit identified one such date correction;
+all accepted populations, scores and dispositions remain unchanged. Extra-time,
+shootout, aggregate, incomplete and administrative values remain separate.
+
+The existing neutral_venue column retains official competition-format semantics,
+not a claim about actual stadium advantage. Preserve source venue evidence and
+nominal orientation in reversible private metadata. Standardized data inherits the
+original rights limitations; it is not automatically cleared for publication.
+
+Require independent exhaustive field/identifier/crosswalk/exclusion comparisons,
+chronology checks, adverse corruption detection, network-disabled fresh-process
+reproduction and protected-file/reference hashes. Report confirmed schema and
+technical uniqueness separately from unregistered competition codes and incomplete
+global legal-identity/alias registries. Do not modify the combined data, global
+crosswalk/audit, earlier competition files or registry in this phase. See
+[the Phase 4 report](docs/uefa-europa-league-phase4.md). Stop before Phase 5.
+
+## UEFA Cup / Europa League finalization (2026-11-28)
+
+The five-phase standalone workflow is complete with explicit compatibility
+conditions. Preserve the accepted Phase 4 CSV byte-for-byte; the final manifest
+references it in place. Local registration of uefael covers both historical
+competition labels and both main/qualifying scopes. Formal registration in the
+original-worktree consolidated builder remains a separate authorized operation.
+
+Final club reconciliation separates display name, match-ID token, accepted seasonal
+identity, historical alias and existing project identity mapping. Resolve cases
+through source-bound coeval aliases, qualified existing registry evidence, bounded
+provider-catalogue continuity or positive distinct-club evidence. Full-label spelling
+correspondence does not establish legal succession. Preserve sensitive, conflicting
+and unresolved identities separately; neither token equality nor different match
+IDs certifies semantic identity or fixture uniqueness.
+
+Require exhaustive independent final row and pair-proof validation, the complete
+applicable repository suite, inherited and new corruption checks, and a fresh
+network-disabled rebuild from original payloads through final metadata. Maintain
+all exclusions and original evidence. Publish no real dataset or provenance without
+rights clearance. Review the exact public code/documentation allowlist and exclude
+the accumulated local planning history. See the final Phase 5 report and publication
+proposal. Stop before staging, commit, push, dataset publication or combined
+integration; each requires explicit owner authorization of its concrete scope.

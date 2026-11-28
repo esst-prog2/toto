@@ -1,0 +1,15 @@
+{
+  "schema": "consolidated-competition-registry-extension-v1",
+  "country": "uefa",
+  "competitions": {
+    "UEFA Cup": "uefael",
+    "UEFA Europa League": "uefael"
+  },
+  "scopes": ["MAIN", "QUALIFYING"],
+  "identifier_length": 24,
+  "registration": "LOCAL_REGISTERED",
+  "formal_global_registration": false,
+  "authorization": "Owner Phase 5 acceptance in principle, conditional on confirmed format and collision checks",
+  "continuity": "Historical labels of one continuous competition; no separate qualifying namespace",
+  "integration": "Add both league labels as (uefa, uefael) entries to the existing consolidated COMPETITIONS mapping in a separately authorized integration; preserve every pre-existing entry"
+}
