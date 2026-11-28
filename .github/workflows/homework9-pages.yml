@@ -5,6 +5,7 @@ on:
     branches: [hw9-promo]
     paths:
       - homework9/index.html
+      - homework9/slides/index.html
       - homework9/assets/**
       - homework9/variants/assets/base.css
       - homework9/variants/assets/a.css
@@ -37,8 +38,9 @@ jobs:
         run: |
           set -euo pipefail
           site="$RUNNER_TEMP/pick-sheet-pages"
-          mkdir -p "$site/assets" "$site/variants/assets"
+          mkdir -p "$site/assets" "$site/variants/assets" "$site/slides"
           cp homework9/index.html "$site/index.html"
+          cp homework9/slides/index.html "$site/slides/index.html"
           cp homework9/assets/brand.css homework9/assets/the-pick-sheet-logo.png "$site/assets/"
           cp homework9/assets/the-pick-sheet-the-last-box-concept.mp4 homework9/assets/the-pick-sheet-concept-poster.jpg "$site/assets/"
           cp homework9/variants/assets/base.css homework9/variants/assets/a.css "$site/variants/assets/"
