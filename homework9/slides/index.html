@@ -3040,7 +3040,7 @@ Reveal.initialize({width:960,height:540,margin:0,minScale:0.1,maxScale:4,center:
   if(Reveal.isReady())ready();else Reveal.on('ready',ready);
   // PowerPoint mainSeq nextAc=seek: a next input during the motion settles it.
   window.addEventListener('keydown',event=>{
-    if(Reveal.getCurrentSlide()===slide&&state==='running'&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&['ArrowRight','ArrowDown','PageDown',' ','Enter'].includes(event.key)){
+    if(Reveal.getCurrentSlide()===slide&&state==='running'&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&['ArrowRight','ArrowDown','PageDown',' ','Enter'].includes(event.key)){
       event.preventDefault();event.stopImmediatePropagation();finish();
     }
   },true);
